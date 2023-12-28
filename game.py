@@ -16,17 +16,18 @@ if __name__ == '__main__':
     size = width, height = 400, 600
     screen = pygame.display.set_mode(size)
     running = True
+    all_spice = pygame.sprite.Group()
     while running:
-        all_spice = pygame.sprite.Group()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
-                    print('here')
                     screen.fill((0, 0, 0))
                     for sprite in all_spice:
-                        sprite.rect = sprite.rect.move(sprite.rect.x + 10, sprite.rect.y )
+                        if sprite.rect.y > 550:
+                            sprite.kill()
+                        sprite.rect = sprite.rect.move(0, 50)
 
                 else:
                     # oleg in his heaven, all's right with project
