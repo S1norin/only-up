@@ -32,7 +32,3 @@ class Sas:
         sprite.image = transfromed_image
         sprite.rect = sprite.image.get_rect()
         sprite.rect.x, sprite.rect.y = self.x, self.y
-
-
-    def ultrakill(self):
-        pass

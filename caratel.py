@@ -6,8 +6,9 @@ GRAVITATION = 1
 
 
 class Sans:
-    def __init__(self, x, y, spice_group):
-        self.x, self.y = x, y
+    def __init__(self, position, spice_group):
+        self.x, self.y = position[0], position[1]
+        self.width, self.height = WIDTH, HEIGHT
         original_image = load_image("character.png")
         transfromed_image = pygame.transform.scale(original_image, (WIDTH, HEIGHT))
         self.sprite = pygame.sprite.Sprite(spice_group)
