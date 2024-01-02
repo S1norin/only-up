@@ -1,6 +1,6 @@
 SANS_POSTITION = (200, 300)
-GRAVITATION = 3
-STANDARD_JUMP_SPEED = 7
+GRAVITATION = 4
+STANDARD_JUMP_SPEED = 4
 from random import randrange
 import pygame
 from platform import Sas
@@ -10,7 +10,7 @@ from time import sleep
 
 
 def create_starfield():
-    for y in range(10, 590, 80):
+    for y in range(10, 590, 100):
         x = randrange(400)
         central_platform = Sas(x, y, all_spice) # RIP oleg, oleg1, oleg2. Теперь олегом называется только главный персонаж
         left_platform = Sas(x + 80, y, all_spice)
@@ -22,7 +22,7 @@ if __name__ == '__main__':
     # Pygame and screen initialization
     pygame.init()
     pygame.display.set_caption('Doodle Moodle')
-    size = width, height = 400, 600
+    size = width, height = 1000, 1000
     screen = pygame.display.set_mode(size)
     running = True
 
@@ -46,15 +46,24 @@ if __name__ == '__main__':
             # Interaction with main character
             for sans in sans_group:
                 if event.type == pygame.MOUSEMOTION:  # moving character with mouse
-                    sans.rect.x = pygame.mouse.get_pos()[0] - (oleg.width) / 2
+                    relative_mouse_motion = pygame.mouse.get_rel()[0]
+                   # sans.rect.x = pygame.mouse.get_pos()[0] - (oleg.width) / 2
+                    sans.rect = sans.rect.move(relative_mouse_motion, 0)
+                    if relative_mouse_motion > 0:
+                        oleg.hor_velocity = round(abs(oleg.vert_velocity))
+                    elif relative_mouse_motion < 0:
+                        oleg.hor_velocity = round(-abs(oleg.vert_velocity))
+                    print(oleg.vert_velocity)
+
+        # Gravitation and inertion
         for sans in sans_group:
-            sans.rect = sans.rect.move((0, oleg.vert_velocity))
+            sans.rect = sans.rect.move((oleg.hor_velocity, oleg.vert_velocity))
 
         if oleg.vert_velocity >= 0:
-            # Колизия засчтиывается, даже если ты ты сталкиваешься с блоком лбом. Нужно уменьшать хитбокс
+            # Колизия засчтиывается, даже если ты ты сталкиваешься с блоком лбом. Нужно уменьшать хитбокс, чтобы он был только в ногах
             if pygame.sprite.spritecollideany(sans_group.sprites()[0], all_spice):
                 oleg.collision(STANDARD_JUMP_SPEED)
-        oleg.vert_velocity += (GRAVITATION * clock.tick(60)) / 750
+        oleg.vert_velocity += ((GRAVITATION * clock.tick(120)) / 750)
 
         for sprite in all_spice: # Killing sprites that are offscreeen
             if sprite.rect.y > 550:
