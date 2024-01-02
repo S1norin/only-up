@@ -10,12 +10,15 @@ from caratel import Sans
 from time import sleep
 
 
-def create_starfield():
+def spawn_platform(platforms_group):
+    x = randrange(width)
+    platform = Sas(x, 0, platforms_group)
+
+
+def create_starfield(platforms_group):
     for y in range(10, height, 100):
         x = randrange(width)
-        central_platform = Sas(x, y, all_spice)
-        left_platform = Sas(x + 80, y, all_spice)
-        right_platform = Sas(x - 80, y, all_spice)
+        platform = Sas(x, y, platforms_group)
 
 
 def buttons_interaction(character):
@@ -39,8 +42,6 @@ def buttons_interaction(character):
                 hor_acceleration = 0
 
     if abs(character.hor_velocity + hor_acceleration) <= MAX_HOR_SPEED:
-        if abs(character.hor_velocity) < 0.5:
-            character.hor_velocity += hor_acceleration * 1.3
         if abs(character.hor_velocity) < 2:
             character.hor_velocity += hor_acceleration
         else:
@@ -50,15 +51,25 @@ def buttons_interaction(character):
 
 
 def move(character, character_sprite, platforms_group):
+    """Двигает спрайты"""
+    global points, dynamic_points
+
     if character_sprite.rect.y + character.vert_velocity > 250:
         character_sprite.rect = character_sprite.rect.move((round(character.hor_velocity), character.vert_velocity))
     else:
         character_sprite.rect = character_sprite.rect.move((round(character.hor_velocity), 0))
+        points -= character.vert_velocity
+        dynamic_points -= character.vert_velocity
+        if dynamic_points > 100:
+            spawn_platform(platforms_group)
+            dynamic_points = 0
         for platform in platforms_group:
             platform.rect = platform.rect.move((0, -character.vert_velocity))
 
 
 speed = 60
+points = 0  # Счёт игрока
+dynamic_points = 0  # То же самое, что points, но обнуляется каждые 100 очков, создавая платформу
 if __name__ == '__main__':
     # Pygame and screen initialization
     pygame.init()
@@ -70,7 +81,7 @@ if __name__ == '__main__':
     # Sprite group, start screen and character initialization
     all_spice = pygame.sprite.Group()
     sans_group = pygame.sprite.Group()
-    create_starfield()
+    create_starfield(all_spice)
 
     oleg = Sans((width / 2, height / 2), sans_group)  # Олег Санс
     pygame.mouse.set_visible(False)
