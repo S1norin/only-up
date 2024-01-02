@@ -1,4 +1,4 @@
-GRAVITATION = 4
+GRAVITATION = 3
 STANDARD_JUMP_SPEED = 4
 SCREEN_SIZE = (1000, 1000)
 MAX_HOR_SPEED = 3
@@ -13,9 +13,49 @@ from time import sleep
 def create_starfield():
     for y in range(10, height, 100):
         x = randrange(width)
-        central_platform = Sas(x, y, all_spice) # RIP oleg, oleg1, oleg2. Теперь олегом называется только главный персонаж
+        central_platform = Sas(x, y, all_spice)
         left_platform = Sas(x + 80, y, all_spice)
         right_platform = Sas(x - 80, y, all_spice)
+
+
+def buttons_interaction(character):
+    """Обработка кнопочных событий"""
+    global hor_acceleration
+
+    running_flag = True
+    for event in pygame.event.get():  # Exit check
+        if event.type == pygame.QUIT:
+            running_flag = False
+            return running_flag
+
+        # Interaction with main character
+        for sans in sans_group:
+            if event.type == pygame.KEYDOWN:
+                if pygame.key.get_pressed()[pygame.K_LEFT]:
+                    hor_acceleration = -0.05
+                elif pygame.key.get_pressed()[pygame.K_RIGHT]:
+                    hor_acceleration = 0.05
+            elif event.type == pygame.KEYUP:
+                hor_acceleration = 0
+
+    if abs(character.hor_velocity + hor_acceleration) <= MAX_HOR_SPEED:
+        if abs(character.hor_velocity) < 0.5:
+            character.hor_velocity += hor_acceleration * 1.3
+        if abs(character.hor_velocity) < 2:
+            character.hor_velocity += hor_acceleration
+        else:
+            character.hor_velocity += hor_acceleration * 1.3
+
+    return running_flag
+
+
+def move(character, character_sprite, platforms_group):
+    if character_sprite.rect.y + character.vert_velocity > 250:
+        character_sprite.rect = character_sprite.rect.move((round(character.hor_velocity), character.vert_velocity))
+    else:
+        character_sprite.rect = character_sprite.rect.move((round(character.hor_velocity), 0))
+        for platform in platforms_group:
+            platform.rect = platform.rect.move((0, -character.vert_velocity))
 
 
 speed = 60
@@ -28,48 +68,34 @@ if __name__ == '__main__':
     running = True
 
     # Sprite group, start screen and character initialization
-    center_of_screen = (width / 2, height / 2)
     all_spice = pygame.sprite.Group()
     sans_group = pygame.sprite.Group()
     create_starfield()
-    oleg = Sans(center_of_screen, sans_group)  # Олег Санс
-    pygame.mouse.set_pos((center_of_screen[0] + (oleg.width) / 2,
-                          center_of_screen[1] + (oleg.height) / 2))  # Центруем мышь. Почему-то работает через раз
-    pygame.mouse.set_visible(True)
 
-    # Time and physics
+    oleg = Sans((width / 2, height / 2), sans_group)  # Олег Санс
+    pygame.mouse.set_visible(False)
+
+    # Clock init
     clock = pygame.time.Clock()
 
     hor_acceleration = 0
     while running:
-        for event in pygame.event.get(): # Exit check
-            if event.type == pygame.QUIT:
-                running = False
+        # Events reading
+        running = buttons_interaction(oleg)
 
-            # Interaction with main character
-            for sans in sans_group:
-                if event.type == pygame.KEYDOWN:  # moving character with arrow buttons
-                    if pygame.key.get_pressed()[pygame.K_LEFT]:
-                        hor_acceleration = -0.05
-                    elif pygame.key.get_pressed()[pygame.K_RIGHT]:
-                        hor_acceleration = 0.05
-                elif event.type == pygame.KEYUP:
-                    hor_acceleration = 0
-
-        if abs(oleg.hor_velocity + hor_acceleration) <= MAX_HOR_SPEED:
-            oleg.hor_velocity += hor_acceleration
-
-        # Gravitation and inertion
+        # Character movement
         for sans in sans_group:
-            sans.rect = sans.rect.move((round(oleg.hor_velocity), oleg.vert_velocity))
+            move(oleg, sans, all_spice)
 
+        # Collision
         if oleg.vert_velocity >= 0:
-            # Колизия засчтиывается, даже если ты ты сталкиваешься с блоком лбом. Нужно уменьшать хитбокс, чтобы он был только в ногах
             if pygame.sprite.spritecollideany(sans_group.sprites()[0], all_spice):
                 oleg.collision(STANDARD_JUMP_SPEED)
-        oleg.vert_velocity += ((GRAVITATION * clock.tick(120)) / 750)
 
-        for sprite in all_spice: # Killing sprites that are offscreeen
+        # Gravitation
+        oleg.vert_velocity += ((GRAVITATION * clock.tick(120)) / 1000)
+
+        for sprite in all_spice:  # Killing sprites that are offscreeen
             if sprite.rect.y > height - 50:
                 sprite.kill()
 
