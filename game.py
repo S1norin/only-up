@@ -1,6 +1,6 @@
 GRAVITATION = 3
 STANDARD_JUMP_SPEED = 4
-SCREEN_SIZE = (1000, 1000)
+SCREEN_SIZE = (500, 1000)
 MAX_HOR_SPEED = 3
 from random import randrange
 import pygame
@@ -31,7 +31,12 @@ def buttons_interaction(character):
             running_flag = False
             return running_flag
 
-        # Interaction with main character
+        # Relative control
+        cursor_position_relatively_to_center = pygame.mouse.get_pos()[0] - width / 2
+        hor_acceleration = (cursor_position_relatively_to_center / (width / 2)) * MAX_HOR_SPEED
+        print(hor_acceleration, cursor_position_relatively_to_center)
+
+        # Interaction with main character (Arrow controls)
         for sans in sans_group:
             if event.type == pygame.KEYDOWN:
                 if pygame.key.get_pressed()[pygame.K_LEFT]:
@@ -84,7 +89,7 @@ if __name__ == '__main__':
     create_starfield(all_spice)
 
     oleg = Sans((width / 2, height / 2), sans_group)  # Олег Санс
-    pygame.mouse.set_visible(False)
+    pygame.mouse.set_visible(True)
 
     # Clock init
     clock = pygame.time.Clock()
