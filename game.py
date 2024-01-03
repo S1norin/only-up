@@ -1,7 +1,6 @@
 GRAVITATION = 3
 STANDARD_JUMP_SPEED = 4
 SCREEN_SIZE = (500, 1000)
-MAX_HOR_SPEED = 4
 from random import randrange
 import pygame
 from platform import Sas
@@ -21,38 +20,17 @@ def create_starfield(platforms_group):
         platform = Sas(x, y, platforms_group)
 
 
-def buttons_interaction(character, tick):
+def buttons_interaction(character):
     """Обработка кнопочных событий"""
-    global hor_acceleration
 
     # Relative control
     cursor_position_relatively_to_center = pygame.mouse.get_pos()[0] - width / 2
-    hor_acceleration = (cursor_position_relatively_to_center / (width / 2))
-    print(character.hor_velocity)
-    running_flag = True
+    character.hor_velocity = cursor_position_relatively_to_center / 100
 
+    running_flag = True
     for event in pygame.event.get():  # Exit check
         if event.type == pygame.QUIT:
             running_flag = False
-            return running_flag
-
-
-
-        # Interaction with main character (Arrow controls)
-        for sans in sans_group:
-            if event.type == pygame.KEYDOWN:
-                if pygame.key.get_pressed()[pygame.K_LEFT]:
-                    hor_acceleration = -0.05
-                elif pygame.key.get_pressed()[pygame.K_RIGHT]:
-                    hor_acceleration = 0.05
-            elif event.type == pygame.KEYUP:
-                hor_acceleration = 0
-
-    if abs(character.hor_velocity + hor_acceleration) <= MAX_HOR_SPEED:
-        if abs(character.hor_velocity) < 2:
-            character.hor_velocity += hor_acceleration * tick / 30
-        else:
-            character.hor_velocity += hor_acceleration * 1.3 * tick / 30
 
     return running_flag
 
@@ -93,7 +71,7 @@ if __name__ == '__main__':
     oleg = Sans((width / 2, height / 2), sans_group)  # Олег Санс
     pygame.mouse.set_pos(((SCREEN_SIZE[0] + oleg.width) / 2,
                           (SCREEN_SIZE[1] + oleg.height) / 2))
-    pygame.mouse.set_visible(True)
+    pygame.mouse.set_visible(False)
 
     # Clock init
     clock = pygame.time.Clock()
@@ -102,7 +80,7 @@ if __name__ == '__main__':
     while running:
         tick = clock.tick(120) # Вывел тик в переменную в начале цикла, чтобы при множественном обращении не ломать вообще всё, что завязано на времени
         # Events reading
-        running = buttons_interaction(oleg, tick)
+        running = buttons_interaction(oleg)
 
         # Character movement
         for sans in sans_group:
