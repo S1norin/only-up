@@ -91,6 +91,8 @@ if __name__ == '__main__':
     create_starfield(all_spice)
 
     oleg = Sans((width / 2, height / 2), sans_group)  # Олег Санс
+    pygame.mouse.set_pos(((SCREEN_SIZE[0] + oleg.width) / 2,
+                          (SCREEN_SIZE[1] + oleg.height) / 2))
     pygame.mouse.set_visible(True)
 
     # Clock init
