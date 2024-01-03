@@ -1,7 +1,7 @@
 GRAVITATION = 3
 STANDARD_JUMP_SPEED = 4
 SCREEN_SIZE = (500, 1000)
-MAX_HOR_SPEED = 3
+MAX_HOR_SPEED = 4
 from random import randrange
 import pygame
 from platform import Sas
@@ -21,20 +21,22 @@ def create_starfield(platforms_group):
         platform = Sas(x, y, platforms_group)
 
 
-def buttons_interaction(character):
+def buttons_interaction(character, tick):
     """Обработка кнопочных событий"""
     global hor_acceleration
 
+    # Relative control
+    cursor_position_relatively_to_center = pygame.mouse.get_pos()[0] - width / 2
+    hor_acceleration = (cursor_position_relatively_to_center / (width / 2))
+    print(character.hor_velocity)
     running_flag = True
+
     for event in pygame.event.get():  # Exit check
         if event.type == pygame.QUIT:
             running_flag = False
             return running_flag
 
-        # Relative control
-        cursor_position_relatively_to_center = pygame.mouse.get_pos()[0] - width / 2
-        hor_acceleration = (cursor_position_relatively_to_center / (width / 2)) * MAX_HOR_SPEED
-        print(hor_acceleration, cursor_position_relatively_to_center)
+
 
         # Interaction with main character (Arrow controls)
         for sans in sans_group:
@@ -48,9 +50,9 @@ def buttons_interaction(character):
 
     if abs(character.hor_velocity + hor_acceleration) <= MAX_HOR_SPEED:
         if abs(character.hor_velocity) < 2:
-            character.hor_velocity += hor_acceleration
+            character.hor_velocity += hor_acceleration * tick / 30
         else:
-            character.hor_velocity += hor_acceleration * 1.3
+            character.hor_velocity += hor_acceleration * 1.3 * tick / 30
 
     return running_flag
 
@@ -96,8 +98,9 @@ if __name__ == '__main__':
 
     hor_acceleration = 0
     while running:
+        tick = clock.tick(120) # Вывел тик в переменную в начале цикла, чтобы при множественном обращении не ломать вообще всё, что завязано на времени
         # Events reading
-        running = buttons_interaction(oleg)
+        running = buttons_interaction(oleg, tick)
 
         # Character movement
         for sans in sans_group:
@@ -109,7 +112,7 @@ if __name__ == '__main__':
                 oleg.collision(STANDARD_JUMP_SPEED)
 
         # Gravitation
-        oleg.vert_velocity += ((GRAVITATION * clock.tick(120)) / 1000)
+        oleg.vert_velocity += ((GRAVITATION * tick) / 1000)
 
         for sprite in all_spice:  # Killing sprites that are offscreeen
             if sprite.rect.y > height - 50:
