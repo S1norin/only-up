@@ -1,10 +1,12 @@
 GRAVITATION = 3
 STANDARD_JUMP_SPEED = 4
 SCREEN_SIZE = (500, 1000)
+STOP_FLOATING_POINT = 0.4
 from random import randrange
 import pygame
 from platform import Sas
 from caratel import Sans
+from cursor import Cursor
 
 from time import sleep
 
@@ -24,6 +26,7 @@ def buttons_interaction(character):
     """Обработка кнопочных событий"""
 
     # Relative control
+
     cursor_position_relatively_to_center = pygame.mouse.get_pos()[0] - width / 2
     character.hor_velocity = cursor_position_relatively_to_center / 100
 
@@ -31,6 +34,14 @@ def buttons_interaction(character):
     for event in pygame.event.get():  # Exit check
         if event.type == pygame.QUIT:
             running_flag = False
+        elif event.type == pygame.MOUSEMOTION:
+            for cursor_sprite in cursor_group:
+                if pygame.mouse.get_pos()[0] < SCREEN_SIZE[0] / 2:
+                    cursor.flip(False)
+                else:
+                    cursor.flip(True)
+                cursor_sprite.rect = pygame.mouse.get_pos()
+
 
     return running_flag
 
@@ -66,11 +77,14 @@ if __name__ == '__main__':
     # Sprite group, start screen and character initialization
     all_spice = pygame.sprite.Group()
     sans_group = pygame.sprite.Group()
+    cursor_group = pygame.sprite.Group()
     create_starfield(all_spice)
 
     oleg = Sans((width / 2, height / 2), sans_group)  # Олег Санс
     pygame.mouse.set_pos(((SCREEN_SIZE[0] + oleg.width) / 2,
                           (SCREEN_SIZE[1] + oleg.height) / 2))
+
+    cursor = Cursor(*map(lambda x: x/2, SCREEN_SIZE), cursor_group)
     pygame.mouse.set_visible(False)
 
     # Clock init
@@ -93,14 +107,17 @@ if __name__ == '__main__':
 
         # Gravitation
         oleg.vert_velocity += ((GRAVITATION * tick) / 1000)
+        if abs(oleg.vert_velocity) < STOP_FLOATING_POINT: # Определяет, при каком значении скорости Санс сразу полетит вниз
+            oleg.vert_velocity = 1
 
         for sprite in all_spice:  # Killing sprites that are offscreeen
             if sprite.rect.y > height - 50:
                 sprite.kill()
 
         # Render
-        screen.fill((0, 0, 0))
+        screen.fill((255, 255, 255))
         all_spice.draw(screen)
         sans_group.draw(screen)
+        cursor_group.draw(screen)
         pygame.display.flip()
 pygame.quit()

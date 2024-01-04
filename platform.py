@@ -1,4 +1,4 @@
-WIDTH, HEIGHT = 30, 10
+WIDTH, HEIGHT = 40, 10
 
 import os
 import sys
