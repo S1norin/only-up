@@ -1,4 +1,5 @@
-WIDTH, HEIGHT = 40, 10
+PLATFORM_WIDTH, PLATFORM_HEIGHT = 40, 10
+
 
 import os
 import sys
@@ -26,8 +27,9 @@ class Sas:
 
     def __init__(self, x, y, spice_group):
         self.x, self.y = x, y
+        self.width, self.height = PLATFORM_WIDTH, PLATFORM_HEIGHT
         original_image = load_image("platform.png")
-        transfromed_image = pygame.transform.scale(original_image, (WIDTH, HEIGHT))
+        transfromed_image = pygame.transform.scale(original_image, (PLATFORM_WIDTH, PLATFORM_HEIGHT))
         sprite = pygame.sprite.Sprite(spice_group)
         sprite.image = transfromed_image
         sprite.rect = sprite.image.get_rect()
