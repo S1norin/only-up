@@ -1,4 +1,4 @@
-GRAVITATION = 3
+GRAVITATION = 100  # В процентах от каноничного 0.02
 STANDARD_JUMP_SPEED = 4
 SCREEN_SIZE = (500, 1000)
 STOP_FLOATING_POINT = 0.4
@@ -28,7 +28,7 @@ def buttons_interaction(character):
     # Relative control
 
     cursor_position_relatively_to_center = pygame.mouse.get_pos()[0] - width / 2
-    character.hor_velocity = cursor_position_relatively_to_center / 100
+    character.hor_velocity = cursor_position_relatively_to_center / 130
 
     running_flag = True
     for event in pygame.event.get():  # Exit check
@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
     hor_acceleration = 0
     while running:
-        tick = clock.tick(120) # Вывел тик в переменную в начале цикла, чтобы при множественном обращении не ломать вообще всё, что завязано на времени
+        clock.tick(200)
         # Events reading
         running = buttons_interaction(oleg)
 
@@ -106,7 +106,7 @@ if __name__ == '__main__':
                 oleg.collision(STANDARD_JUMP_SPEED)
 
         # Gravitation
-        oleg.vert_velocity += ((GRAVITATION * tick) / 1000)
+        oleg.vert_velocity += 0.02 * GRAVITATION / 100
         if abs(oleg.vert_velocity) < STOP_FLOATING_POINT: # Определяет, при каком значении скорости Санс сразу полетит вниз
             oleg.vert_velocity = 1
 
