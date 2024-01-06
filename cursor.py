@@ -1,6 +1,6 @@
 WIDTH, HEIGHT = 30, 20
 import pygame
-from platform import load_image
+from game_objects import load_image
 
 class Cursor:
     def __init__(self, x, y, spice_group):

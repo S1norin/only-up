@@ -1,4 +1,4 @@
-from platform import load_image
+from game_objects import load_image
 import pygame
 WIDTH, HEIGHT = 25, 40
 GRAVITATION = 1
