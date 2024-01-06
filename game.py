@@ -1,8 +1,8 @@
-GRAVITATION = 3
+GRAVITATION = 100
 STANDARD_JUMP_SPEED = 4
 SCREEN_SIZE = (500, 1000)
 STOP_FLOATING_POINT = 0.4  # Определяет, при каком значении скорости Санс сразу полетит вниз
-MAX_HOR_SPEED = 7
+MAX_HOR_SPEED = 3
 DYNAMIC_POINT_LIMIT = 100  # Через сколько очков будет спарвнится платформа
 SPIKE_SPAWN_PROBABILITY = 10
 BOMB_SPAWN_PROBABILITY = 15
@@ -39,11 +39,6 @@ def buttons_interaction(character):
 
     cursor_position_relatively_to_center = pygame.mouse.get_pos()[0] - width / 2
     character.hor_velocity = cursor_position_relatively_to_center / (width / 2) * MAX_HOR_SPEED
-    if abs(character.hor_velocity) < MAX_HOR_SPEED * 0.3:
-        if character.hor_velocity > 0:
-            character.hor_velocity = MAX_HOR_SPEED * 0.25
-        else:
-            character.hor_velocity = -MAX_HOR_SPEED * 0.25
 
     running_flag = True
     for event in pygame.event.get():  # Exit check
@@ -94,7 +89,6 @@ def move(character, character_sprite, platforms_group):
 def bomb_detonation():
     for bomb in zip(bombs_on_screen, bomb_group):
         bomb[0].timer += tick / 1000
-        print(bomb[0].timer)
         if bomb[0].timer > BOMB_TIMER_LIMIT:
             print("SANS IS FUCKING DEAD")
 
@@ -149,7 +143,7 @@ if __name__ == '__main__':
     # Clock init
     clock = pygame.time.Clock()
     while running:
-        tick = clock.tick(120)
+        tick = clock.tick(200)
         # Events reading
         running = buttons_interaction(oleg)
 
@@ -174,7 +168,7 @@ if __name__ == '__main__':
             pass
 
         # Gravitation
-        oleg.vert_velocity += ((GRAVITATION * tick) / 1000)
+        oleg.vert_velocity += 0.02 * GRAVITATION / 100
         if abs(oleg.vert_velocity) < STOP_FLOATING_POINT:  # Определяет, при каком значении скорости Санс сразу полетит вниз
             oleg.vert_velocity = 1
 
