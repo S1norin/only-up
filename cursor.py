@@ -1,4 +1,4 @@
-WIDTH, HEIGHT = 30, 20
+CURSOR_WIDTH, CURSOR_HEIGHT = 30, 20
 import pygame
 from game_objects import load_image
 
@@ -7,9 +7,9 @@ class Cursor:
         self.orientation = True
         self.x, self.y = x, y
         original_image = load_image("cursor.png")
-        self.transfromed_image = pygame.transform.scale(original_image, (WIDTH, HEIGHT))
+        self.transformed_image = pygame.transform.scale(original_image, (CURSOR_WIDTH, CURSOR_HEIGHT))
         self.sprite = pygame.sprite.Sprite(spice_group)
-        self.sprite.image = self.transfromed_image
+        self.sprite.image = self.transformed_image
         self.sprite.rect = self.sprite.image.get_rect()
         self.sprite.rect.x, self.sprite.rect.y = self.x, self.y
 

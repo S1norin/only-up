@@ -24,14 +24,14 @@ def load_image(name, colorkey=None):
     return image
 
 
-class TheSprite:
+class Sprite:
     def __init__(self, x, y, spice_group):
         self.x, self.y = x, y
         self.set_size()
         original_image = self.orig_image()
-        transfromed_image = pygame.transform.scale(original_image, (self.width, self.height))
+        transformed_image = pygame.transform.scale(original_image, (self.width, self.height))
         sprite = pygame.sprite.Sprite(spice_group)
-        sprite.image = transfromed_image
+        sprite.image = transformed_image
         sprite.rect = sprite.image.get_rect()
         sprite.rect.x, sprite.rect.y = self.x, self.y
 
@@ -42,7 +42,7 @@ class TheSprite:
         self.width, self.height = None, None
 
 
-class Sas(TheSprite):
+class Sas(Sprite):
     def orig_image(self):
         return load_image("platform.png")
 
@@ -50,14 +50,14 @@ class Sas(TheSprite):
         self.width, self.height = PLATFORM_WIDTH, PLATFROM_HEIGHT
 
 
-class KillingSas(TheSprite):
+class KillingSas(Sprite):
     def orig_image(self):
         return load_image("spikes.png")
 
     def set_size(self):
         self.width, self.height = SPIKE_WIDTH, SPIKE_HEIGHT
 
-class Bomb(TheSprite):
+class Bomb(Sprite):
     def __init__(self, x, y, spice_group):
         super().__init__(x, y, spice_group)
         self.timer = 0

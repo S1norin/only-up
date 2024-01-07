@@ -10,7 +10,7 @@ BOMB_TIMER_LIMIT = 10
 
 from random import randrange
 import pygame
-from game_objects import Sas, KillingSas, Bomb, PLATFORM_WIDTH, SPIKE_WIDTH, BOMB_WIDTH, BOMB_HEIGHT
+from game_objects import Sas, KillingSas, Bomb, PLATFORM_WIDTH, SPIKE_WIDTH, BOMB_WIDTH
 from caratel import Sans
 from cursor import Cursor
 
@@ -31,6 +31,7 @@ def spawn_platform(platforms_group):
         x2 = randrange(width - BOMB_WIDTH)
         bomb = Bomb(x2, 0, bomb_group)
         bombs_on_screen.append(bomb)
+
 
 def buttons_interaction(character):
     """Обработка кнопочных событий"""
@@ -55,11 +56,10 @@ def buttons_interaction(character):
                     cursor.flip(False)
                 else:
                     cursor.flip(True)
-                cursor_sprite.rect = pygame.mouse.get_pos()
+                cursor_sprite.rect.x, cursor_sprite.rect.y = pygame.mouse.get_pos()
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            mouse_x, mouse_y = pygame.mouse.get_pos()
             for index, bomb in enumerate(zip(bombs_on_screen, bomb_group)):
-                if bomb[1].rect.x <= mouse_x < bomb[1].rect.x + BOMB_WIDTH and bomb[1].rect.y <= mouse_y < bomb[1].rect.y + BOMB_HEIGHT:
+                if pygame.sprite.spritecollideany(bomb[1], cursor_group):
                     bomb[1].kill()
                     bombs_on_screen.remove(bomb[0])
 
@@ -95,10 +95,14 @@ def bomb_detonation():
     for bomb in zip(bombs_on_screen, bomb_group):
         bomb[0].timer += tick / 1000
         print(bomb[0].timer)
-        if bomb[0].timer > BOMB_TIMER_LIMIT:
-            print("SANS IS FUCKING DEAD")
+        try:
+            if bomb[0].timer > BOMB_TIMER_LIMIT:
+                sans_group.sprites()[0].kill()
+        except IndexError:
+            pass
 
-def killing_sprites(): # Killing sprites that are offscreeen
+
+def killing_sprites():  # Killing sprites that are offscreeen
     for platform in platform_group:
         if platform.rect.y > height - 50:
             platform.kill()
@@ -109,6 +113,7 @@ def killing_sprites(): # Killing sprites that are offscreeen
         if bomb[1].rect.y > height - 50:
             bomb[1].kill()
             bombs_on_screen.remove(bomb[0])
+
 
 def render():
     screen.fill((255, 255, 255))
@@ -138,8 +143,8 @@ if __name__ == '__main__':
     bomb_group = pygame.sprite.Group()
     create_starfield(platform_group)
 
-    oleg = Sans((width / 2, height / 2), sans_group)  # Олег Санс
     bombs_on_screen = []
+    oleg = Sans((width / 2, height / 2), sans_group)  # Олег Санс
 
     pygame.mouse.set_pos(((SCREEN_SIZE[0] + oleg.width) / 2,
                           (SCREEN_SIZE[1] + oleg.height) / 2))
