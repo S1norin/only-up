@@ -30,10 +30,10 @@ class Sprite:
         self.set_size()
         original_image = self.orig_image()
         transformed_image = pygame.transform.scale(original_image, (self.width, self.height))
-        sprite = pygame.sprite.Sprite(spice_group)
-        sprite.image = transformed_image
-        sprite.rect = sprite.image.get_rect()
-        sprite.rect.x, sprite.rect.y = self.x, self.y
+        self.sprite = pygame.sprite.Sprite(spice_group)
+        self.sprite.image = transformed_image
+        self.sprite.rect = self.sprite.image.get_rect()
+        self.sprite.rect.x, self.sprite.rect.y = self.x, self.y
 
     def orig_image(self):
         raise FileNotFoundError("Image not selected")
@@ -67,3 +67,15 @@ class Bomb(Sprite):
 
     def set_size(self):
         self.width, self.height = BOMB_WIDTH, BOMB_HEIGHT
+
+    def draw_timer(self, time_left, screen, coor_x, coord_y):
+        font = pygame.font.Font(None, 30)
+
+        if time_left > 0:
+            text = font.render(str(time_left), True, (240, 7, 23))
+        else:
+            text = font.render("BOOM", True, (240, 7, 23))
+        text_x = coor_x + BOMB_WIDTH / 2
+        text_y = coord_y + BOMB_HEIGHT
+        screen.blit(text, (text_x, text_y))
+

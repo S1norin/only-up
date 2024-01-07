@@ -116,6 +116,8 @@ def render():
     cursor_group.draw(screen)
     spike_group.draw(screen)
     bomb_group.draw(screen)
+    for bomb in bombs_on_screen:
+        bomb.draw_timer(int(BOMB_TIMER_LIMIT - bomb.timer), screen, bomb.sprite.rect[0], bomb.sprite.rect[1])
     pygame.display.flip()
 
 
@@ -129,19 +131,20 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode(size)
     running = True
 
-    # Sprite group, start screen and character initialization
+    # Sprite groups, start screen and character initialization
     platform_group = pygame.sprite.Group()
     sans_group = pygame.sprite.Group()
     cursor_group = pygame.sprite.Group()
     spike_group = pygame.sprite.Group()
     bomb_group = pygame.sprite.Group()
+    timer_group = pygame.sprite.Group
     create_starfield(platform_group)
 
+    # Milcanceuos (Как это слово пишется?) init
     bombs_on_screen = []
     oleg = Sans((width / 2, height / 2), sans_group)  # Олег Санс
 
-    pygame.mouse.set_pos(((SCREEN_SIZE[0] + oleg.width) / 2,
-                          (SCREEN_SIZE[1] + oleg.height) / 2))
+    pygame.mouse.set_pos((width + oleg.width) / 2, (height + oleg.height) / 2)
     cursor = Cursor(*map(lambda x: x / 2, SCREEN_SIZE), cursor_group)
     pygame.mouse.set_visible(False)
 
@@ -178,7 +181,6 @@ if __name__ == '__main__':
             oleg.vert_velocity = 1
 
         killing_sprites()
-
         render()
 
 pygame.quit()
