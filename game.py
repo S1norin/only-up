@@ -89,7 +89,6 @@ def move(character, character_sprite, platforms_group):
 def bomb_detonation():
     for bomb in zip(bombs_on_screen, bomb_group):
         bomb[0].timer += tick / 1000
-        print(bomb[0].timer)
         try:
             if bomb[0].timer > BOMB_TIMER_LIMIT:
                 sans_group.sprites()[0].kill()
@@ -108,6 +107,7 @@ def killing_sprites():  # Killing sprites that are offscreeen
         if bomb[1].rect.y > height - 50:
             bomb[1].kill()
             bombs_on_screen.remove(bomb[0])
+
 
 def render():
     screen.fill((255, 255, 255))
