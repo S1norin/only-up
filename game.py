@@ -10,8 +10,8 @@ BOMB_TIMER_LIMIT = 10
 
 from random import randrange
 import pygame
-from game_objects import Sas, KillingSas, Bomb, PLATFORM_WIDTH, SPIKE_WIDTH, BOMB_WIDTH
-from caratel import Sans
+from game_objects import Sas, KillingSas, Bomb, PLATFORM_WIDTH, SPIKE_WIDTH, BOMB_WIDTH, load_image
+from caratel import Sans, WIDTH, HEIGHT
 from cursor import Cursor
 
 
@@ -64,6 +64,8 @@ def buttons_interaction(character):
 def move(character, character_sprite, platforms_group):
     """Двигает спрайты"""
     global points, dynamic_points
+
+    character.change_character_sprite()
 
     if character_sprite.rect.x < 0:
         character_sprite.rect.x = width - character.width

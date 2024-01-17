@@ -4,7 +4,6 @@ WIDTH, HEIGHT = 25, 40
 GRAVITATION = 1
 
 
-
 class Sans:
     def __init__(self, position, spice_group):
         # Setting up coords and size
@@ -25,5 +24,18 @@ class Sans:
     def collision(self, velocity):
         self.vert_velocity = -velocity
 
-    def death(self):
+    def change_character_sprite(self):
+        if self.hor_velocity < -1:
+            img_name = "Cat_left_final.png"
+        elif self.hor_velocity < 0:
+            img_name = "Cat_lean_left_final.png"
+        elif self.hor_velocity < 1:
+            img_name = "Cat_lean_right_final.png"
+        else:
+            img_name = "Cat_right_final.png"
+        original_image = load_image(img_name)
+        transfromed_image = pygame.transform.scale(original_image, (WIDTH, HEIGHT))
+        self.sprite.image = transfromed_image
+
+    def death(self):  # sans is fucking immortal dude
         pass
