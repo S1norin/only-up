@@ -8,11 +8,25 @@ SPIKE_SPAWN_PROBABILITY = 10
 BOMB_SPAWN_PROBABILITY = 15
 BOMB_TIMER_LIMIT = 10
 
+
 from random import randrange
 import pygame
 from game_objects import Sas, KillingSas, Bomb, PLATFORM_WIDTH, SPIKE_WIDTH, BOMB_WIDTH, load_image
 from caratel import Sans, WIDTH, HEIGHT
 from cursor import Cursor
+
+
+def set_difficulty(level):
+    global SPIKE_SPAWN_PROBABILITY, BOMB_SPAWN_PROBABILITY
+    if level == 1:
+        SPIKE_SPAWN_PROBABILITY = 15
+        BOMB_SPAWN_PROBABILITY = 20
+    elif level == 2:
+        SPIKE_SPAWN_PROBABILITY = 6
+        BOMB_SPAWN_PROBABILITY = 10
+    else:
+        SPIKE_SPAWN_PROBABILITY = 3
+        BOMB_SPAWN_PROBABILITY = 5
 
 
 def create_starfield(platforms_group):
@@ -27,7 +41,7 @@ def spawn_platform(platforms_group):
     if randrange(SPIKE_SPAWN_PROBABILITY) == 0:
         x1 = randrange(width - SPIKE_WIDTH)
         spike = KillingSas(x1, -100, spike_group)
-    if randrange(SPIKE_SPAWN_PROBABILITY) == 0:
+    if randrange(BOMB_SPAWN_PROBABILITY) == 0:
         x2 = randrange(width - BOMB_WIDTH)
         bomb = Bomb(x2, 0, bomb_group)
         bombs_on_screen.append(bomb)
@@ -91,11 +105,8 @@ def move(character, character_sprite, platforms_group):
 def bomb_detonation():
     for bomb in zip(bombs_on_screen, bomb_group):
         bomb[0].timer += tick / 1000
-        try:
-            if bomb[0].timer > BOMB_TIMER_LIMIT:
-                sans_group.sprites()[0].kill()
-        except IndexError:
-            pass
+        if bomb[0].timer > BOMB_TIMER_LIMIT and sans_group.sprites():
+            sans_group.sprites()[0].kill()
 
 
 def killing_sprites():  # Killing sprites that are offscreeen
