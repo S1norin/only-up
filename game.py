@@ -46,7 +46,8 @@ def init_interface(buttons_group):
 
 
 
-def interface(difficulty_clicks):
+def interface():
+    global difficulty_clicks
     running_flag = True
     for event in pygame.event.get():  # Exit check
         if event.type == pygame.QUIT:
@@ -56,9 +57,9 @@ def interface(difficulty_clicks):
                 running_flag = False
             elif width / 2 - BUTTON_WIDTH / 2 < pygame.mouse.get_pos()[0] < width / 2 - BUTTON_WIDTH / 2 + BUTTON_WIDTH and height / 2 < pygame.mouse.get_pos()[1] < height / 2  + BUTTON_HEIGHT:
                 difficulty_clicks += 1
-                buttons_group.kill()
+                for button in buttons_group:
+                    button.kill()
                 init_interface(buttons_group)
-
     buttons_group.draw(screen)
     pygame.display.flip()
 
@@ -186,7 +187,7 @@ if __name__ == '__main__':
     init_interface(buttons_group)
 
     while interface_running:
-        interface_running = interface(difficulty_clicks)
+        interface_running = interface()
     pygame.mouse.set_visible(False)
     while running:
 
