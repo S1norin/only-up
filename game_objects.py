@@ -1,7 +1,7 @@
 PLATFORM_WIDTH, PLATFROM_HEIGHT = 40, 10
 SPIKE_WIDTH, SPIKE_HEIGHT = 25, 100
 BOMB_WIDTH, BOMB_HEIGHT = 40, 40
-BUTTON_WIDTH, BUTTON_HEIGHT = 100, 200
+BUTTON_WIDTH, BUTTON_HEIGHT = 200, 75
 
 import os
 import sys
@@ -81,8 +81,19 @@ class Bomb(Sprite):
         screen.blit(text, (text_x, text_y))
 
 class Button(Sprite):
-    def orig_image(self):
-        return load_image("platform.png")
+
+    def __init__(self, x, y, spice_group, image_name):
+        self.x, self.y = x, y
+        self.set_size()
+        original_image = self.orig_image(image_name)
+        transformed_image = pygame.transform.scale(original_image, (self.width, self.height))
+        self.sprite = pygame.sprite.Sprite(spice_group)
+        self.sprite.image = transformed_image
+        self.sprite.rect = self.sprite.image.get_rect()
+        self.sprite.rect.x, self.sprite.rect.y = self.x, self.y
+
+    def orig_image(self, image_name):
+        return load_image(image_name)
 
     def set_size(self):
         self.width, self.height = BUTTON_WIDTH, BUTTON_HEIGHT

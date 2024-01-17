@@ -33,20 +33,34 @@ def spawn_platform(platforms_group):
         bombs_on_screen.append(bomb)
 
 def init_interface(buttons_group):
-    for y in range(10, height, BUTTON_HEIGHT + 20):
-        button = Button(width / 2 - BUTTON_WIDTH / 2, y, buttons_group)
+    start_button = Button(width / 2 - BUTTON_WIDTH / 2, height / 2 - height / 6, buttons_group, "Start_button.png")
+    if difficulty_clicks % 3 == 0:
+        difficulty_buttons = Button(width / 2 - BUTTON_WIDTH / 2, height / 2, buttons_group, "Difficulty_Easy.png")
+    elif difficulty_clicks % 3 == 1:
+        difficulty_buttons = Button(width / 2 - BUTTON_WIDTH / 2, height / 2, buttons_group, "Difficulty_Advanced.png")
+    else:
+        difficulty_buttons = Button(width / 2 - BUTTON_WIDTH / 2, height / 2, buttons_group, "Difficulty_Hard.png")
 
 
 
-def interface():
+
+
+
+def interface(difficulty_clicks):
     running_flag = True
     for event in pygame.event.get():  # Exit check
         if event.type == pygame.QUIT:
-            running_flag = False
-    print(buttons_group)
+            pygame.quit()
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if width / 2 - BUTTON_WIDTH / 2 < pygame.mouse.get_pos()[0] < width / 2 - BUTTON_WIDTH / 2 + BUTTON_WIDTH and height / 2 - height / 6 < pygame.mouse.get_pos()[1] < height / 2 - height / 6 + BUTTON_HEIGHT:
+                running_flag = False
+            elif width / 2 - BUTTON_WIDTH / 2 < pygame.mouse.get_pos()[0] < width / 2 - BUTTON_WIDTH / 2 + BUTTON_WIDTH and height / 2 < pygame.mouse.get_pos()[1] < height / 2  + BUTTON_HEIGHT:
+                difficulty_clicks += 1
+                buttons_group.kill()
+                init_interface(buttons_group)
+
     buttons_group.draw(screen)
     pygame.display.flip()
-
 
     return running_flag
 
@@ -162,17 +176,18 @@ if __name__ == '__main__':
     # Milcanceuos (Как это слово пишется?) init
     bombs_on_screen = []
     oleg = Sans((width / 2, height / 2), sans_group)  # Олег Санс
-
+    difficulty_clicks = 0
     pygame.mouse.set_pos((width + oleg.width) / 2, (height + oleg.height) / 2)
     cursor = Cursor(*map(lambda x: x / 2, SCREEN_SIZE), cursor_group)
-    pygame.mouse.set_visible(False)
+    pygame.mouse.set_visible(True)
 
     # Clock init
     clock = pygame.time.Clock()
     init_interface(buttons_group)
 
     while interface_running:
-        interface_running = interface()
+        interface_running = interface(difficulty_clicks)
+    pygame.mouse.set_visible(False)
     while running:
 
         tick = clock.tick(200)
