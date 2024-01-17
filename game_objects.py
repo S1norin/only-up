@@ -1,6 +1,7 @@
 PLATFORM_WIDTH, PLATFROM_HEIGHT = 40, 10
 SPIKE_WIDTH, SPIKE_HEIGHT = 25, 100
 BOMB_WIDTH, BOMB_HEIGHT = 40, 40
+BUTTON_WIDTH, BUTTON_HEIGHT = 100, 200
 
 import os
 import sys
@@ -79,3 +80,9 @@ class Bomb(Sprite):
         text_y = coord_y + BOMB_HEIGHT
         screen.blit(text, (text_x, text_y))
 
+class Button(Sprite):
+    def orig_image(self):
+        return load_image("platform.png")
+
+    def set_size(self):
+        self.width, self.height = BUTTON_WIDTH, BUTTON_HEIGHT

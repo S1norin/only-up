@@ -10,7 +10,7 @@ BOMB_TIMER_LIMIT = 10
 
 from random import randrange
 import pygame
-from game_objects import Sas, KillingSas, Bomb, PLATFORM_WIDTH, SPIKE_WIDTH, BOMB_WIDTH
+from game_objects import Sas, KillingSas, Bomb, Button, PLATFORM_WIDTH, SPIKE_WIDTH, BOMB_WIDTH, BUTTON_WIDTH, BUTTON_HEIGHT
 from caratel import Sans
 from cursor import Cursor
 
@@ -32,6 +32,23 @@ def spawn_platform(platforms_group):
         bomb = Bomb(x2, 0, bomb_group)
         bombs_on_screen.append(bomb)
 
+def init_interface(buttons_group):
+    for y in range(10, height, BUTTON_HEIGHT + 20):
+        button = Button(width / 2 - BUTTON_WIDTH / 2, y, buttons_group)
+
+
+
+def interface():
+    running_flag = True
+    for event in pygame.event.get():  # Exit check
+        if event.type == pygame.QUIT:
+            running_flag = False
+    print(buttons_group)
+    buttons_group.draw(screen)
+    pygame.display.flip()
+
+
+    return running_flag
 
 def buttons_interaction(character):
     """Обработка кнопочных событий"""
@@ -129,6 +146,7 @@ if __name__ == '__main__':
     pygame.display.set_caption('Doodle Moodle')
     size = width, height = SCREEN_SIZE
     screen = pygame.display.set_mode(size)
+    interface_running = True
     running = True
 
     # Sprite groups, start screen and character initialization
@@ -137,7 +155,8 @@ if __name__ == '__main__':
     cursor_group = pygame.sprite.Group()
     spike_group = pygame.sprite.Group()
     bomb_group = pygame.sprite.Group()
-    timer_group = pygame.sprite.Group
+    timer_group = pygame.sprite.Group()
+    buttons_group = pygame.sprite.Group()
     create_starfield(platform_group)
 
     # Milcanceuos (Как это слово пишется?) init
@@ -150,7 +169,12 @@ if __name__ == '__main__':
 
     # Clock init
     clock = pygame.time.Clock()
+    init_interface(buttons_group)
+
+    while interface_running:
+        interface_running = interface()
     while running:
+
         tick = clock.tick(200)
         # Events reading
         running = buttons_interaction(oleg)
