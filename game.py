@@ -156,6 +156,8 @@ if __name__ == '__main__':
     # Milcanceuos (Как это слово пишется?) init
     bombs_on_screen = []
     oleg = Sans((width / 2, height / 2), sans_group)  # Олег Санс
+    legs = Sans((width / 2, height / 2), sans_group)
+    head = Sans((width / 2, height / 2), sans_group)
 
     pygame.mouse.set_pos((width + oleg.width) / 2, (height + oleg.height) / 2)
     cursor = Cursor(*map(lambda x: x / 2, SCREEN_SIZE), cursor_group)

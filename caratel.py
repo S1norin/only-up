@@ -1,14 +1,14 @@
 from game_objects import load_image
 import pygame
-WIDTH, HEIGHT = 25, 40
+WIDTH, HEIGHT = 50, 80
 GRAVITATION = 1
 
 
 class Sans:
-    def __init__(self, position, spice_group):
+    def __init__(self, position,  spice_group, img_name, size=(WIDTH, HEIGHT)):
         # Setting up coords and size
         self.x, self.y = position[0], position[1]
-        self.width, self.height = WIDTH, HEIGHT
+        self.width, self.height = size
         # Initializing sprite
         original_image = load_image("character.png")
         transfromed_image = pygame.transform.scale(original_image, (WIDTH, HEIGHT))
@@ -39,3 +39,6 @@ class Sans:
 
     def death(self):  # sans is fucking immortal dude
         pass
+
+
+class Hitbox(Sans):
