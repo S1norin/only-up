@@ -4,13 +4,13 @@ WIDTH, HEIGHT = 50, 80
 GRAVITATION = 1
 
 
-class Sans:
-    def __init__(self, position,  spice_group, img_name, size=(WIDTH, HEIGHT)):
+class Hitbox:
+    def __init__(self, position, spice_group, size=(WIDTH, HEIGHT)):
         # Setting up coords and size
         self.x, self.y = position[0], position[1]
         self.width, self.height = size
         # Initializing sprite
-        original_image = load_image("character.png")
+        original_image = load_image("void.png")
         transfromed_image = pygame.transform.scale(original_image, (WIDTH, HEIGHT))
         self.sprite = pygame.sprite.Sprite(spice_group)
         self.sprite.image = transfromed_image
@@ -24,6 +24,8 @@ class Sans:
     def collision(self, velocity):
         self.vert_velocity = -velocity
 
+
+class Sans(Hitbox):
     def change_character_sprite(self):
         if self.hor_velocity < -1:
             img_name = "Cat_left_final.png"
@@ -39,6 +41,3 @@ class Sans:
 
     def death(self):  # sans is fucking immortal dude
         pass
-
-
-class Hitbox(Sans):
