@@ -75,7 +75,7 @@ def buttons_interaction(character):
     return running_flag
 
 
-def move(character, character_sprite, platforms_group):
+def move(character, character_sprite):
     """Двигает спрайты"""
     global points, dynamic_points
 
@@ -88,13 +88,18 @@ def move(character, character_sprite, platforms_group):
     if character_sprite.rect.y + character.vert_velocity > 250:
         character_sprite.rect = character_sprite.rect.move((round(character.hor_velocity), character.vert_velocity))
     else:
-        character_sprite.rect = character_sprite.rect.move((round(character.hor_velocity), 0))
+        character_sprite.rect = character.sprite.rect.move((round(character.hor_velocity), 0))
+
+
+def move_platforms(character):
+    global points, dynamic_points
+    if character.sprite.rect.y + character.vert_velocity <= 250:
         points -= character.vert_velocity
         dynamic_points -= character.vert_velocity
         if dynamic_points > DYNAMIC_POINT_LIMIT:
-            spawn_platform(platforms_group)
+            spawn_platform(platform_group)
             dynamic_points = 0
-        for platform in platforms_group:
+        for platform in platform_group:
             platform.rect = platform.rect.move((0, -character.vert_velocity))
         for spike in spike_group:
             spike.rect = spike.rect.move((0, -character.vert_velocity))
@@ -157,7 +162,6 @@ if __name__ == '__main__':
     bombs_on_screen = []
     oleg = Sans((width / 2, height / 2), sans_group)  # Олег Санс
     legs = Sans((width / 2, height / 2), sans_group)
-    head = Sans((width / 2, height / 2), sans_group)
 
     pygame.mouse.set_pos((width + oleg.width) / 2, (height + oleg.height) / 2)
     cursor = Cursor(*map(lambda x: x / 2, SCREEN_SIZE), cursor_group)
@@ -172,7 +176,8 @@ if __name__ == '__main__':
 
         # Character movement
         for sans in sans_group:
-            move(oleg, sans, platform_group)
+            move(oleg, sans)
+        move_platforms(oleg)
 
         bomb_detonation()
 
