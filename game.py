@@ -56,11 +56,12 @@ def interface():
             if width / 2 - BUTTON_WIDTH / 2 < pygame.mouse.get_pos()[0] < width / 2 - BUTTON_WIDTH / 2 + BUTTON_WIDTH and height / 2 - height / 6 < pygame.mouse.get_pos()[1] < height / 2 - height / 6 + BUTTON_HEIGHT:
                 running_flag = False
                 sans_is_dead = False
+                game_start()
             elif width / 2 - BUTTON_WIDTH / 2 < pygame.mouse.get_pos()[0] < width / 2 - BUTTON_WIDTH / 2 + BUTTON_WIDTH and height / 2 < pygame.mouse.get_pos()[1] < height / 2  + BUTTON_HEIGHT:
                 difficulty_clicks += 1
                 for button in buttons_group:
                     button.kill()
-                init_interface(buttons_group)
+    init_interface(buttons_group)
     buttons_group.draw(screen)
     pygame.display.flip()
 
@@ -159,6 +160,30 @@ def render():
     pygame.display.flip()
 
 
+def game_start():
+    kill_all_objects()
+    global bombs_on_screen, cursor, clock, oleg
+    # Milcanceuos (Как это слово пишется?) init
+    oleg = Sans((width / 2, height / 2), sans_group)  # Олег Санс
+    bombs_on_screen = []
+    pygame.mouse.set_pos((width + oleg.width) / 2, (height + oleg.height) / 2)
+    cursor = Cursor(*map(lambda x: x / 2, SCREEN_SIZE), cursor_group)
+    pygame.mouse.set_visible(True)
+    create_starfield(platform_group)
+    # Clock init
+    clock = pygame.time.Clock()
+
+def kill_all_objects():
+    global platform_group, sans_group, cursor_group, spike_group, bomb_group, timer_group, buttons_group
+    platform_group = pygame.sprite.Group()
+    sans_group = pygame.sprite.Group()
+    cursor_group = pygame.sprite.Group()
+    spike_group = pygame.sprite.Group()
+    bomb_group = pygame.sprite.Group()
+    timer_group = pygame.sprite.Group()
+    buttons_group = pygame.sprite.Group()
+
+
 points = 0  # Счёт игрока
 dynamic_points = 0  # То же самое, что points, но обнуляется каждые DYNAMIC_POINTS_LIMIT очков, создавая платформу
 if __name__ == '__main__':
@@ -167,6 +192,7 @@ if __name__ == '__main__':
     pygame.display.set_caption('Doodle Moodle')
     size = width, height = SCREEN_SIZE
     screen = pygame.display.set_mode(size)
+    difficulty_clicks = 0
     interface_running = True
     running = True
 
@@ -178,18 +204,8 @@ if __name__ == '__main__':
     bomb_group = pygame.sprite.Group()
     timer_group = pygame.sprite.Group()
     buttons_group = pygame.sprite.Group()
-    create_starfield(platform_group)
 
-    # Milcanceuos (Как это слово пишется?) init
-    bombs_on_screen = []
-    oleg = Sans((width / 2, height / 2), sans_group)  # Олег Санс
-    difficulty_clicks = 0
-    pygame.mouse.set_pos((width + oleg.width) / 2, (height + oleg.height) / 2)
-    cursor = Cursor(*map(lambda x: x / 2, SCREEN_SIZE), cursor_group)
-    pygame.mouse.set_visible(True)
 
-    # Clock init
-    clock = pygame.time.Clock()
     init_interface(buttons_group)
 
 
@@ -229,11 +245,10 @@ if __name__ == '__main__':
 
         print(sans_group)
         killing_sprites()
-        render()
         if sans_is_dead:
             pygame.mouse.set_visible(True)
             interface_running = True
-            print("fuck")
+        render()
 
 
 pygame.quit()
