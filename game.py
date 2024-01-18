@@ -183,9 +183,10 @@ def render():
 
 def game_start():
     kill_all_objects()
-    global bombs_on_screen, cursor, clock, oleg
+    global bombs_on_screen, cursor, clock, oleg, legs
     # Milcanceuos (Как это слово пишется?) init
     oleg = Sans((width / 2, height / 2), sans_group)  # Олег Санс
+    legs = Hitbox((width / 2, height / 2+80), sans_group, size=(50, 3))
     bombs_on_screen = []
     pygame.mouse.set_pos((width + oleg.width) / 2, (height + oleg.height) / 2)
     cursor = Cursor(*map(lambda x: x / 2, SCREEN_SIZE), cursor_group)
@@ -227,9 +228,6 @@ if __name__ == '__main__':
     buttons_group = pygame.sprite.Group()
 
     # Milcanceuos (Как это слово пишется?) init
-    bombs_on_screen = []
-    oleg = Sans((width / 2, height / 2), sans_group)  # Олег Санс
-    legs = Hitbox((width / 2, height / 2+80), sans_group, size=(50, 3))
 
     init_interface(buttons_group)
 
