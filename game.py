@@ -47,7 +47,7 @@ def init_interface(buttons_group):
 
 
 def interface():
-    global difficulty_clicks
+    global difficulty_clicks, sans_is_dead
     running_flag = True
     for event in pygame.event.get():  # Exit check
         if event.type == pygame.QUIT:
@@ -55,6 +55,7 @@ def interface():
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if width / 2 - BUTTON_WIDTH / 2 < pygame.mouse.get_pos()[0] < width / 2 - BUTTON_WIDTH / 2 + BUTTON_WIDTH and height / 2 - height / 6 < pygame.mouse.get_pos()[1] < height / 2 - height / 6 + BUTTON_HEIGHT:
                 running_flag = False
+                sans_is_dead = False
             elif width / 2 - BUTTON_WIDTH / 2 < pygame.mouse.get_pos()[0] < width / 2 - BUTTON_WIDTH / 2 + BUTTON_WIDTH and height / 2 < pygame.mouse.get_pos()[1] < height / 2  + BUTTON_HEIGHT:
                 difficulty_clicks += 1
                 for button in buttons_group:
@@ -128,7 +129,8 @@ def bomb_detonation():
             pass
 
 
-def killing_sprites():  # Killing sprites that are offscreeen
+def killing_sprites(): # Killing sprites that are offscreeen
+    global sans_is_dead
     for platform in platform_group:
         if platform.rect.y > height - 50:
             platform.kill()
@@ -139,6 +141,10 @@ def killing_sprites():  # Killing sprites that are offscreeen
         if bomb[1].rect.y > height - 50:
             bomb[1].kill()
             bombs_on_screen.remove(bomb[0])
+    for sans in sans_group:
+        if sans.rect.y > height:
+            sans.kill()
+            sans_is_dead = True
 
 
 def render():
@@ -186,11 +192,11 @@ if __name__ == '__main__':
     clock = pygame.time.Clock()
     init_interface(buttons_group)
 
-    while interface_running:
-        interface_running = interface()
-    pygame.mouse.set_visible(False)
-    while running:
 
+    while running:
+        while interface_running:
+            interface_running = interface()
+        pygame.mouse.set_visible(False)
         tick = clock.tick(200)
         # Events reading
         running = buttons_interaction(oleg)
@@ -208,6 +214,7 @@ if __name__ == '__main__':
                     oleg.collision(STANDARD_JUMP_SPEED)
             if pygame.sprite.spritecollideany(sans_group.sprites()[0], spike_group):
                 sans_group.sprites()[0].kill()
+                sans_is_dead = True
             for spike in spike_group:
                 while pygame.sprite.spritecollideany(spike, platform_group):
                     pygame.sprite.spritecollideany(spike, platform_group).kill()
@@ -220,7 +227,13 @@ if __name__ == '__main__':
         if abs(oleg.vert_velocity) < STOP_FLOATING_POINT:  # Определяет, при каком значении скорости Санс сразу полетит вниз
             oleg.vert_velocity = 1
 
+        print(sans_group)
         killing_sprites()
         render()
+        if sans_is_dead:
+            pygame.mouse.set_visible(True)
+            interface_running = True
+            print("fuck")
+
 
 pygame.quit()
