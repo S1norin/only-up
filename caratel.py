@@ -11,7 +11,7 @@ class Hitbox:
         self.width, self.height = size
         # Initializing sprite
         original_image = load_image("void_test.png")
-        transfromed_image = pygame.transform.scale(original_image, (WIDTH, HEIGHT))
+        transfromed_image = pygame.transform.scale(original_image, size)
         self.sprite = pygame.sprite.Sprite(spice_group)
         self.sprite.image = transfromed_image
         self.sprite.rect = self.sprite.image.get_rect()

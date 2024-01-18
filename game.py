@@ -12,7 +12,7 @@ BOMB_TIMER_LIMIT = 10
 from random import randrange
 import pygame
 from game_objects import Sas, KillingSas, Bomb, PLATFORM_WIDTH, SPIKE_WIDTH, BOMB_WIDTH, load_image
-from caratel import Sans, WIDTH, HEIGHT
+from caratel import Sans, WIDTH, HEIGHT, Hitbox
 from cursor import Cursor
 
 
@@ -47,13 +47,14 @@ def spawn_platform(platforms_group):
         bombs_on_screen.append(bomb)
 
 
-def buttons_interaction(character):
+def buttons_interaction(character, hitbox):
     """Обработка кнопочных событий"""
 
     # Relative control
 
     cursor_position_relatively_to_center = pygame.mouse.get_pos()[0] - width / 2
     character.hor_velocity = cursor_position_relatively_to_center / (width / 2) * MAX_HOR_SPEED
+    hitbox.hor_velocity = cursor_position_relatively_to_center / (width / 2) * MAX_HOR_SPEED
 
     running_flag = True
     for event in pygame.event.get():  # Exit check
@@ -75,17 +76,17 @@ def buttons_interaction(character):
     return running_flag
 
 
-def move(character, character_sprite):
+def move(character, character_sprite, hitbox=False):
     """Двигает спрайты"""
     global points, dynamic_points
-
-    character.change_character_sprite()
-
+    relative_coord = 250
+    if hitbox:
+        relative_coord = 330
     if character_sprite.rect.x < 0:
         character_sprite.rect.x = width - character.width
     elif character.sprite.rect.x > width + character.width:
         character_sprite.rect.x = 0
-    if character_sprite.rect.y + character.vert_velocity > 250:
+    if character_sprite.rect.y + character.vert_velocity > relative_coord:
         character_sprite.rect = character_sprite.rect.move((round(character.hor_velocity), character.vert_velocity))
     else:
         character_sprite.rect = character.sprite.rect.move((round(character.hor_velocity), 0))
@@ -161,7 +162,7 @@ if __name__ == '__main__':
     # Milcanceuos (Как это слово пишется?) init
     bombs_on_screen = []
     oleg = Sans((width / 2, height / 2), sans_group)  # Олег Санс
-    legs = Sans((width / 2, height / 2), sans_group)
+    legs = Hitbox((width / 2, height / 2+80), sans_group, size=(50, 3))
 
     pygame.mouse.set_pos((width + oleg.width) / 2, (height + oleg.height) / 2)
     cursor = Cursor(*map(lambda x: x / 2, SCREEN_SIZE), cursor_group)
@@ -172,11 +173,13 @@ if __name__ == '__main__':
     while running:
         tick = clock.tick(200)
         # Events reading
-        running = buttons_interaction(oleg)
+        running = buttons_interaction(oleg, legs)
 
         # Character movement
-        for sans in sans_group:
-            move(oleg, sans)
+        move(oleg, sans_group.sprites()[0])
+        oleg.change_character_sprite()
+        move(legs, sans_group.sprites()[1], True)
+
         move_platforms(oleg)
 
         bomb_detonation()
@@ -184,10 +187,12 @@ if __name__ == '__main__':
         # Collision
         try:
             if oleg.vert_velocity >= 0:
-                if pygame.sprite.spritecollideany(sans_group.sprites()[0], platform_group):
+                if pygame.sprite.spritecollideany(sans_group.sprites()[1], platform_group):
+                    legs.collision(STANDARD_JUMP_SPEED)
                     oleg.collision(STANDARD_JUMP_SPEED)
             if pygame.sprite.spritecollideany(sans_group.sprites()[0], spike_group):
                 sans_group.sprites()[0].kill()
+                sans_group.sprites()[1].kill()
             for spike in spike_group:
                 while pygame.sprite.spritecollideany(spike, platform_group):
                     pygame.sprite.spritecollideany(spike, platform_group).kill()
@@ -197,8 +202,10 @@ if __name__ == '__main__':
 
         # Gravitation
         oleg.vert_velocity += 0.02 * GRAVITATION / 100
+        legs.vert_velocity += 0.02 * GRAVITATION / 100
         if abs(oleg.vert_velocity) < STOP_FLOATING_POINT:  # Определяет, при каком значении скорости Санс сразу полетит вниз
             oleg.vert_velocity = 1
+            legs.vert_velocity = 1
 
         killing_sprites()
         render()
