@@ -6,7 +6,7 @@ SCREEN_SIZE = (500, 1000)
 STOP_FLOATING_POINT = 0.4  # Определяет, при каком значении скорости Санс сразу полетит вниз
 MAX_HOR_SPEED = 3
 DYNAMIC_POINT_LIMIT = 100  # Через сколько очков будет спарвнится платформа
-BOMB_TIMER_LIMIT = 10
+BOMB_TIMER_LIMIT = 7
 
 import os
 from random import randrange, choice
@@ -157,7 +157,8 @@ def bomb_detonation():
     for bomb in zip(bombs_on_screen, bomb_group):
         bomb[0].timer += tick / 1000
         if bomb[0].timer > BOMB_TIMER_LIMIT and sans_group.sprites():
-            sans_group.sprites()[0].kill()
+            return True
+    return False
 
 
 def killing_sprites():  # Killing sprites that are offscreeen
@@ -262,7 +263,7 @@ if __name__ == '__main__':
         move(legs, sans_group.sprites()[1], True)
 
         move_platforms(oleg)
-        bomb_detonation()
+        sans_is_dead = bomb_detonation()
 
         # Collision
         try:
