@@ -103,6 +103,19 @@ class Button(Sprite):
 
 class Background(Sprite):
 
+
+    def __init__(self, x, y, spice_group, dead=False):
+        self.x, self.y = x, y
+        self.set_size()
+        if dead:
+            original_image = self.death_image()
+        else:
+            original_image = self.orig_image()
+        transformed_image = pygame.transform.scale(original_image, (self.width, self.height))
+        self.sprite = pygame.sprite.Sprite(spice_group)
+        self.sprite.image = transformed_image
+        self.sprite.rect = self.sprite.image.get_rect()
+        self.sprite.rect.x, self.sprite.rect.y = self.x, self.y
     def orig_image(self):
         global cat_pictures_left
         background = random.choice(cat_pictures_left)
@@ -113,3 +126,7 @@ class Background(Sprite):
 
     def set_size(self):
         self.width, self.height = WINDOW_WIDTH, WINDOW_HEIGHT
+
+    def death_image(self):
+        self.width, self.height = WINDOW_WIDTH, WINDOW_HEIGHT
+        return load_image("photo_2024-01-21_16-40-43.jpg")

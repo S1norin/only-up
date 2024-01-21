@@ -33,36 +33,48 @@ def set_difficulty(level):
         BOMB_SPAWN_PROBABILITY = 5
 
 
-def init_interface(buttons_group):
-    start_button = Button(width / 2 - BUTTON_WIDTH / 2, height / 2 - height / 6, buttons_group, "Start_button.png")
-    if difficulty_clicks % 3 == 0:
-        difficulty_buttons = Button(width / 2 - BUTTON_WIDTH / 2, height / 2, buttons_group, "Difficulty_Easy.png")
-    elif difficulty_clicks % 3 == 1:
-        difficulty_buttons = Button(width / 2 - BUTTON_WIDTH / 2, height / 2, buttons_group, "Difficulty_Advanced.png")
+def init_interface(buttons_group, dead):
+    if dead:
+        x = width / 2 - BUTTON_WIDTH / 2
+        y = height / 2 + 200
     else:
-        difficulty_buttons = Button(width / 2 - BUTTON_WIDTH / 2, height / 2, buttons_group, "Difficulty_Hard.png")
+        x = width / 2 - BUTTON_WIDTH / 2
+        y = height / 2
+    start_button = Button(x, y - height / 6, buttons_group, "Start_button.png")
+    if difficulty_clicks % 3 == 0:
+        difficulty_buttons = Button(x, y, buttons_group, "Difficulty_Easy.png")
+    elif difficulty_clicks % 3 == 1:
+        difficulty_buttons = Button(x, y, buttons_group, "Difficulty_Advanced.png")
+    else:
+        difficulty_buttons = Button(x, y, buttons_group, "Difficulty_Hard.png")
 
 
 def interface():
-    global difficulty_clicks, sans_is_dead
+    global difficulty_clicks, sans_is_dead, background_sprite
     running_flag = True
+    reset_all_objects()
+    if sans_is_dead:
+        background_sprite = Background(0, 0, background_group, True)
+        x = width / 2 - BUTTON_WIDTH / 2
+        y = height / 2 + 200
+    else:
+        x = width / 2 - BUTTON_WIDTH / 2
+        y = height / 2
     for event in pygame.event.get():  # Exit check
         if event.type == pygame.QUIT:
             pygame.quit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if width / 2 - BUTTON_WIDTH / 2 < pygame.mouse.get_pos()[
-                0] < width / 2 - BUTTON_WIDTH / 2 + BUTTON_WIDTH and height / 2 - height / 6 < pygame.mouse.get_pos()[
-                1] < height / 2 - height / 6 + BUTTON_HEIGHT:
+            if x < pygame.mouse.get_pos()[
+                0] < x + BUTTON_WIDTH and y - height / 6 < pygame.mouse.get_pos()[1] < y - height / 6 + BUTTON_HEIGHT:
                 running_flag = False
                 sans_is_dead = False
                 game_start()
-            elif width / 2 - BUTTON_WIDTH / 2 < pygame.mouse.get_pos()[
-                0] < width / 2 - BUTTON_WIDTH / 2 + BUTTON_WIDTH and height / 2 < pygame.mouse.get_pos()[
-                1] < height / 2 + BUTTON_HEIGHT:
+            elif x < pygame.mouse.get_pos()[
+                0] < x + BUTTON_WIDTH and y < pygame.mouse.get_pos()[1] < y + BUTTON_HEIGHT:
                 difficulty_clicks += 1
                 for button in buttons_group:
                     button.kill()
-    init_interface(buttons_group)
+    init_interface(buttons_group, sans_is_dead)
     background_group.draw(screen)
     buttons_group.draw(screen)
     pygame.display.flip()
@@ -77,7 +89,6 @@ def create_starfield(platforms_group):
             platform = Sas(width / 2, y, platforms_group)
         else:
             platform = Sas(x, y, platforms_group)
-
 
 
 def spawn_platform(platforms_group):
@@ -211,6 +222,8 @@ def game_start():
     set_difficulty(difficulty_clicks % 3)
     oleg = Sans((width / 2, height / 2), sans_group)  # Олег Санс
     legs = Hitbox((width / 2, height / 2 + 80), sans_group, size=(50, 3))
+    dead_music.stop()
+    alive_music.play()
     bombs_on_screen = []
     pygame.mouse.set_pos((width + oleg.width) / 2, (height + oleg.height) / 2)
     cursor = Cursor(*map(lambda x: x / 2, SCREEN_SIZE), cursor_group)
@@ -229,6 +242,10 @@ if __name__ == '__main__':
     size = width, height = SCREEN_SIZE
     screen = pygame.display.set_mode(size)
     difficulty_clicks = 0
+    pygame.mixer.pre_init()
+    alive_music = pygame.mixer.Sound("assets\Hampsterdance_main.mp3")
+    dead_music = pygame.mixer.Sound("assets\Hampsterdance_slowed_reverbed_dowbgraded_cut.mp3")
+    sans_is_dead = False
     interface_running = True
     running = True
 
@@ -244,11 +261,10 @@ if __name__ == '__main__':
 
     # Milcanceuos (Как это слово пишется?) init
 
-    init_interface(buttons_group)
+    init_interface(buttons_group, sans_is_dead)
 
     screen.fill((255, 255, 255))
     while running:
-
         while interface_running:
             interface_running = interface()
         pygame.mouse.set_visible(False)
@@ -290,6 +306,8 @@ if __name__ == '__main__':
 
         killing_sprites()
         if sans_is_dead:
+            alive_music.stop()
+            dead_music.play()
             pygame.mouse.set_visible(True)
             interface_running = True
         render()
