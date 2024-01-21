@@ -8,7 +8,8 @@ import sys
 import pygame
 import random
 
-cat_pictures = [filename for filename in os.listdir("assets") if ".jpg" in filename]
+all_cat_pictures = [filename for filename in os.listdir("assets") if ".jpg" in filename]
+cat_pictures_left = all_cat_pictures[:]
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('assets', name)
@@ -103,7 +104,12 @@ class Button(Sprite):
 class Background(Sprite):
 
     def orig_image(self):
-        return load_image(random.choice(cat_pictures))
+        global cat_pictures_left
+        background = random.choice(cat_pictures_left)
+        cat_pictures_left.remove(background)
+        if not cat_pictures_left:
+            cat_pictures_left = all_cat_pictures[:]
+        return load_image(background)
 
     def set_size(self):
         self.width, self.height = WINDOW_WIDTH, WINDOW_HEIGHT
