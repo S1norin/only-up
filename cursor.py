@@ -1,6 +1,9 @@
-CURSOR_WIDTH, CURSOR_HEIGHT = 30, 20
 import pygame
 from game_objects import load_image
+
+
+CURSOR_WIDTH, CURSOR_HEIGHT = 30, 20
+
 
 class Cursor:
     def __init__(self, x, y, spice_group):
@@ -19,5 +22,3 @@ class Cursor:
         else:
             self.sprite.image = pygame.transform.flip(self.sprite.image, True, False)
             self.orientation = orientation
-
-

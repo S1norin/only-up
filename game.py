@@ -1,4 +1,12 @@
-import random
+from random import randrange
+import pygame
+from caratel import Hitbox
+from game_objects import Sas, KillingSas, Bomb, Button, Background, PLATFORM_WIDTH, SPIKE_WIDTH, BOMB_WIDTH, \
+    BUTTON_WIDTH, \
+    BUTTON_HEIGHT
+from caratel import Sans
+from cursor import Cursor
+
 
 GRAVITATION = 100
 STANDARD_JUMP_SPEED = 4
@@ -6,18 +14,7 @@ SCREEN_SIZE = (500, 1000)
 STOP_FLOATING_POINT = 0.4  # Определяет, при каком значении скорости Санс сразу полетит вниз
 MAX_HOR_SPEED = 3
 DYNAMIC_POINT_LIMIT = 100  # Через сколько очков будет спарвнится платформа
-BOMB_TIMER_LIMIT = 10
-
-import os
-from random import randrange, choice
-import pygame
-from game_objects import Sas, KillingSas, Bomb, PLATFORM_WIDTH, SPIKE_WIDTH, BOMB_WIDTH, load_image
-from caratel import Sans, WIDTH, HEIGHT, Hitbox
-from game_objects import Sas, KillingSas, Bomb, Button, Background, PLATFORM_WIDTH, SPIKE_WIDTH, BOMB_WIDTH, \
-    BUTTON_WIDTH, \
-    BUTTON_HEIGHT
-from caratel import Sans
-from cursor import Cursor
+BOMB_TIMER_LIMIT = 7
 
 
 def set_difficulty(level):
@@ -40,13 +37,13 @@ def init_interface(buttons_group, dead):
     else:
         x = width / 2 - BUTTON_WIDTH / 2
         y = height / 2
-    start_button = Button(x, y - height / 6, buttons_group, "Start_button.png")
+    Button(x, y - height / 6, buttons_group, "Start_button.png")
     if difficulty_clicks % 3 == 0:
-        difficulty_buttons = Button(x, y, buttons_group, "Difficulty_Easy.png")
+        Button(x, y, buttons_group, "Difficulty_Easy.png")
     elif difficulty_clicks % 3 == 1:
-        difficulty_buttons = Button(x, y, buttons_group, "Difficulty_Advanced.png")
+        Button(x, y, buttons_group, "Difficulty_Advanced.png")
     else:
-        difficulty_buttons = Button(x, y, buttons_group, "Difficulty_Hard.png")
+        Button(x, y, buttons_group, "Difficulty_Hard.png")
 
 
 def interface():
@@ -86,17 +83,17 @@ def create_starfield(platforms_group):
     for y in range(10, height, DYNAMIC_POINT_LIMIT):
         x = randrange(width - PLATFORM_WIDTH)
         if y == 610:
-            platform = Sas(width / 2, y, platforms_group)
+            Sas(width / 2, y, platforms_group)
         else:
-            platform = Sas(x, y, platforms_group)
+            Sas(x, y, platforms_group)
 
 
 def spawn_platform(platforms_group):
     x = randrange(width - PLATFORM_WIDTH)
-    platform = Sas(x, 0, platforms_group)
+    Sas(x, 0, platforms_group)
     if randrange(SPIKE_SPAWN_PROBABILITY) == 0:
         x1 = randrange(width - SPIKE_WIDTH)
-        spike = KillingSas(x1, -100, spike_group)
+        KillingSas(x1, -100, spike_group)
     if randrange(BOMB_SPAWN_PROBABILITY) == 0:
         x2 = randrange(width - BOMB_WIDTH)
         bomb = Bomb(x2, 0, bomb_group)
@@ -168,7 +165,8 @@ def bomb_detonation():
     for bomb in zip(bombs_on_screen, bomb_group):
         bomb[0].timer += tick / 1000
         if bomb[0].timer > BOMB_TIMER_LIMIT and sans_group.sprites():
-            sans_group.sprites()[0].kill()
+            return True
+    return False
 
 
 def killing_sprites():  # Killing sprites that are offscreeen
@@ -190,7 +188,8 @@ def killing_sprites():  # Killing sprites that are offscreeen
 
 
 def reset_all_objects():
-    global platform_group, sans_group, cursor_group, spike_group, bomb_group, timer_group, buttons_group, background_group
+    global \
+        platform_group, sans_group, cursor_group, spike_group, bomb_group, timer_group, buttons_group, background_group
     background_group = pygame.sprite.Group()
     platform_group = pygame.sprite.Group()
     sans_group = pygame.sprite.Group()
@@ -265,6 +264,7 @@ if __name__ == '__main__':
 
     screen.fill((255, 255, 255))
     while running:
+
         while interface_running:
             interface_running = interface()
         pygame.mouse.set_visible(False)
@@ -278,7 +278,7 @@ if __name__ == '__main__':
         move(legs, sans_group.sprites()[1], True)
 
         move_platforms(oleg)
-        bomb_detonation()
+        sans_is_dead = bomb_detonation()
 
         # Collision
         try:
@@ -300,7 +300,7 @@ if __name__ == '__main__':
         # Gravitation
         oleg.vert_velocity += 0.02 * GRAVITATION / 100
         legs.vert_velocity += 0.02 * GRAVITATION / 100
-        if abs(oleg.vert_velocity) < STOP_FLOATING_POINT:  # Определяет, при каком значении скорости Санс сразу полетит вниз
+        if abs(oleg.vert_velocity) < STOP_FLOATING_POINT:
             oleg.vert_velocity = 1
             legs.vert_velocity = 1
 

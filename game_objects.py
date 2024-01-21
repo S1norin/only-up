@@ -1,15 +1,19 @@
-PLATFORM_WIDTH, PLATFROM_HEIGHT = 40, 10
-SPIKE_WIDTH, SPIKE_HEIGHT = 25, 100
-BOMB_WIDTH, BOMB_HEIGHT = 40, 40
-BUTTON_WIDTH, BUTTON_HEIGHT = 200, 75
-WINDOW_WIDTH, WINDOW_HEIGHT = 500, 1000
 import os
 import sys
 import pygame
 import random
 
+
+PLATFORM_WIDTH, PLATFROM_HEIGHT = 40, 10
+SPIKE_WIDTH, SPIKE_HEIGHT = 25, 100
+BOMB_WIDTH, BOMB_HEIGHT = 40, 40
+BUTTON_WIDTH, BUTTON_HEIGHT = 200, 75
+WINDOW_WIDTH, WINDOW_HEIGHT = 500, 1000
+
+
 all_cat_pictures = [filename for filename in os.listdir("assets") if ".jpg" in filename]
 cat_pictures_left = all_cat_pictures[:]
+
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('assets', name)
@@ -24,7 +28,10 @@ def load_image(name, colorkey=None):
             colorkey = image.get_at((0, 0))
         image.set_colorkey(colorkey)
     else:
-        image = image.convert_alpha()
+        try:
+            image = image.convert_alpha()
+        except Exception:
+            exit()
     return image
 
 
@@ -83,7 +90,8 @@ class Bomb(Sprite):
         text_y = coord_y + BOMB_HEIGHT
         screen.blit(text, (text_x, text_y))
 
-class Button(Sprite):
+
+class Button:
 
     def __init__(self, x, y, spice_group, image_name):
         self.x, self.y = x, y
