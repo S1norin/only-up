@@ -2,11 +2,13 @@ PLATFORM_WIDTH, PLATFROM_HEIGHT = 40, 10
 SPIKE_WIDTH, SPIKE_HEIGHT = 25, 100
 BOMB_WIDTH, BOMB_HEIGHT = 40, 40
 BUTTON_WIDTH, BUTTON_HEIGHT = 200, 75
-
+WINDOW_WIDTH, WINDOW_HEIGHT = 500, 1000
 import os
 import sys
 import pygame
+import random
 
+cat_pictures = [filename for filename in os.listdir("assets") if ".jpg" in filename]
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('assets', name)
@@ -97,3 +99,11 @@ class Button(Sprite):
 
     def set_size(self):
         self.width, self.height = BUTTON_WIDTH, BUTTON_HEIGHT
+
+class Background(Sprite):
+
+    def orig_image(self):
+        return load_image(random.choice(cat_pictures))
+
+    def set_size(self):
+        self.width, self.height = WINDOW_WIDTH, WINDOW_HEIGHT

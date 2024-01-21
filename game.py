@@ -1,29 +1,31 @@
+import random
+
 GRAVITATION = 100
 STANDARD_JUMP_SPEED = 4
 SCREEN_SIZE = (500, 1000)
 STOP_FLOATING_POINT = 0.4  # Определяет, при каком значении скорости Санс сразу полетит вниз
 MAX_HOR_SPEED = 3
 DYNAMIC_POINT_LIMIT = 100  # Через сколько очков будет спарвнится платформа
-SPIKE_SPAWN_PROBABILITY = 10
-BOMB_SPAWN_PROBABILITY = 15
 BOMB_TIMER_LIMIT = 10
 
-
-from random import randrange
+import os
+from random import randrange, choice
 import pygame
 from game_objects import Sas, KillingSas, Bomb, PLATFORM_WIDTH, SPIKE_WIDTH, BOMB_WIDTH, load_image
 from caratel import Sans, WIDTH, HEIGHT, Hitbox
-from game_objects import Sas, KillingSas, Bomb, Button, PLATFORM_WIDTH, SPIKE_WIDTH, BOMB_WIDTH, BUTTON_WIDTH, BUTTON_HEIGHT
+from game_objects import Sas, KillingSas, Bomb, Button, Background, PLATFORM_WIDTH, SPIKE_WIDTH, BOMB_WIDTH, \
+    BUTTON_WIDTH, \
+    BUTTON_HEIGHT
 from caratel import Sans
 from cursor import Cursor
 
 
 def set_difficulty(level):
     global SPIKE_SPAWN_PROBABILITY, BOMB_SPAWN_PROBABILITY
-    if level == 1:
+    if level == 0:
         SPIKE_SPAWN_PROBABILITY = 15
         BOMB_SPAWN_PROBABILITY = 20
-    elif level == 2:
+    elif level == 1:
         SPIKE_SPAWN_PROBABILITY = 6
         BOMB_SPAWN_PROBABILITY = 10
     else:
@@ -31,10 +33,51 @@ def set_difficulty(level):
         BOMB_SPAWN_PROBABILITY = 5
 
 
+def init_interface(buttons_group):
+    start_button = Button(width / 2 - BUTTON_WIDTH / 2, height / 2 - height / 6, buttons_group, "Start_button.png")
+    if difficulty_clicks % 3 == 0:
+        difficulty_buttons = Button(width / 2 - BUTTON_WIDTH / 2, height / 2, buttons_group, "Difficulty_Easy.png")
+    elif difficulty_clicks % 3 == 1:
+        difficulty_buttons = Button(width / 2 - BUTTON_WIDTH / 2, height / 2, buttons_group, "Difficulty_Advanced.png")
+    else:
+        difficulty_buttons = Button(width / 2 - BUTTON_WIDTH / 2, height / 2, buttons_group, "Difficulty_Hard.png")
+
+
+def interface():
+    global difficulty_clicks, sans_is_dead
+    running_flag = True
+    for event in pygame.event.get():  # Exit check
+        if event.type == pygame.QUIT:
+            pygame.quit()
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if width / 2 - BUTTON_WIDTH / 2 < pygame.mouse.get_pos()[
+                0] < width / 2 - BUTTON_WIDTH / 2 + BUTTON_WIDTH and height / 2 - height / 6 < pygame.mouse.get_pos()[
+                1] < height / 2 - height / 6 + BUTTON_HEIGHT:
+                running_flag = False
+                sans_is_dead = False
+                game_start()
+            elif width / 2 - BUTTON_WIDTH / 2 < pygame.mouse.get_pos()[
+                0] < width / 2 - BUTTON_WIDTH / 2 + BUTTON_WIDTH and height / 2 < pygame.mouse.get_pos()[
+                1] < height / 2 + BUTTON_HEIGHT:
+                difficulty_clicks += 1
+                for button in buttons_group:
+                    button.kill()
+    init_interface(buttons_group)
+    background_group.draw(screen)
+    buttons_group.draw(screen)
+    pygame.display.flip()
+
+    return running_flag
+
+
 def create_starfield(platforms_group):
     for y in range(10, height, DYNAMIC_POINT_LIMIT):
         x = randrange(width - PLATFORM_WIDTH)
-        platform = Sas(x, y, platforms_group)
+        if y == 610:
+            platform = Sas(width / 2, y, platforms_group)
+        else:
+            platform = Sas(x, y, platforms_group)
+
 
 
 def spawn_platform(platforms_group):
@@ -48,40 +91,6 @@ def spawn_platform(platforms_group):
         bomb = Bomb(x2, 0, bomb_group)
         bombs_on_screen.append(bomb)
 
-def init_interface(buttons_group):
-    start_button = Button(width / 2 - BUTTON_WIDTH / 2, height / 2 - height / 6, buttons_group, "Start_button.png")
-    if difficulty_clicks % 3 == 0:
-        difficulty_buttons = Button(width / 2 - BUTTON_WIDTH / 2, height / 2, buttons_group, "Difficulty_Easy.png")
-    elif difficulty_clicks % 3 == 1:
-        difficulty_buttons = Button(width / 2 - BUTTON_WIDTH / 2, height / 2, buttons_group, "Difficulty_Advanced.png")
-    else:
-        difficulty_buttons = Button(width / 2 - BUTTON_WIDTH / 2, height / 2, buttons_group, "Difficulty_Hard.png")
-
-
-
-
-
-
-def interface():
-    global difficulty_clicks, sans_is_dead
-    running_flag = True
-    for event in pygame.event.get():  # Exit check
-        if event.type == pygame.QUIT:
-            pygame.quit()
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            if width / 2 - BUTTON_WIDTH / 2 < pygame.mouse.get_pos()[0] < width / 2 - BUTTON_WIDTH / 2 + BUTTON_WIDTH and height / 2 - height / 6 < pygame.mouse.get_pos()[1] < height / 2 - height / 6 + BUTTON_HEIGHT:
-                running_flag = False
-                sans_is_dead = False
-                game_start()
-            elif width / 2 - BUTTON_WIDTH / 2 < pygame.mouse.get_pos()[0] < width / 2 - BUTTON_WIDTH / 2 + BUTTON_WIDTH and height / 2 < pygame.mouse.get_pos()[1] < height / 2  + BUTTON_HEIGHT:
-                difficulty_clicks += 1
-                for button in buttons_group:
-                    button.kill()
-    init_interface(buttons_group)
-    buttons_group.draw(screen)
-    pygame.display.flip()
-
-    return running_flag
 
 def buttons_interaction(character, hitbox):
     """Обработка кнопочных событий"""
@@ -151,7 +160,7 @@ def bomb_detonation():
             sans_group.sprites()[0].kill()
 
 
-def killing_sprites(): # Killing sprites that are offscreeen
+def killing_sprites():  # Killing sprites that are offscreeen
     global sans_is_dead
     for platform in platform_group:
         if platform.rect.y > height - 50:
@@ -169,8 +178,21 @@ def killing_sprites(): # Killing sprites that are offscreeen
             sans_is_dead = True
 
 
+def reset_all_objects():
+    global platform_group, sans_group, cursor_group, spike_group, bomb_group, timer_group, buttons_group, background_group
+    background_group = pygame.sprite.Group()
+    platform_group = pygame.sprite.Group()
+    sans_group = pygame.sprite.Group()
+    cursor_group = pygame.sprite.Group()
+    spike_group = pygame.sprite.Group()
+    bomb_group = pygame.sprite.Group()
+    timer_group = pygame.sprite.Group()
+    buttons_group = pygame.sprite.Group()
+
+
 def render():
     screen.fill((255, 255, 255))
+    background_group.draw(screen)
     platform_group.draw(screen)
     sans_group.draw(screen)
     cursor_group.draw(screen)
@@ -182,11 +204,13 @@ def render():
 
 
 def game_start():
-    kill_all_objects()
+    reset_all_objects()
     global bombs_on_screen, cursor, clock, oleg, legs
     # Milcanceuos (Как это слово пишется?) init
+    background_sprite = Background(0, 0, background_group)
+    set_difficulty(difficulty_clicks % 3)
     oleg = Sans((width / 2, height / 2), sans_group)  # Олег Санс
-    legs = Hitbox((width / 2, height / 2+80), sans_group, size=(50, 3))
+    legs = Hitbox((width / 2, height / 2 + 80), sans_group, size=(50, 3))
     bombs_on_screen = []
     pygame.mouse.set_pos((width + oleg.width) / 2, (height + oleg.height) / 2)
     cursor = Cursor(*map(lambda x: x / 2, SCREEN_SIZE), cursor_group)
@@ -194,16 +218,6 @@ def game_start():
     create_starfield(platform_group)
     # Clock init
     clock = pygame.time.Clock()
-
-def kill_all_objects():
-    global platform_group, sans_group, cursor_group, spike_group, bomb_group, timer_group, buttons_group
-    platform_group = pygame.sprite.Group()
-    sans_group = pygame.sprite.Group()
-    cursor_group = pygame.sprite.Group()
-    spike_group = pygame.sprite.Group()
-    bomb_group = pygame.sprite.Group()
-    timer_group = pygame.sprite.Group()
-    buttons_group = pygame.sprite.Group()
 
 
 points = 0  # Счёт игрока
@@ -219,6 +233,7 @@ if __name__ == '__main__':
     running = True
 
     # Sprite groups, start screen and character initialization
+    background_group = pygame.sprite.Group()
     platform_group = pygame.sprite.Group()
     sans_group = pygame.sprite.Group()
     cursor_group = pygame.sprite.Group()
@@ -231,8 +246,9 @@ if __name__ == '__main__':
 
     init_interface(buttons_group)
 
-
+    screen.fill((255, 255, 255))
     while running:
+
         while interface_running:
             interface_running = interface()
         pygame.mouse.set_visible(False)
@@ -246,7 +262,6 @@ if __name__ == '__main__':
         move(legs, sans_group.sprites()[1], True)
 
         move_platforms(oleg)
-
         bomb_detonation()
 
         # Collision
@@ -278,5 +293,4 @@ if __name__ == '__main__':
             pygame.mouse.set_visible(True)
             interface_running = True
         render()
-
 pygame.quit()

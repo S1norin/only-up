@@ -10,7 +10,7 @@ class Hitbox:
         self.x, self.y = position[0], position[1]
         self.width, self.height = size
         # Initializing sprite
-        original_image = load_image("void_test.png")
+        original_image = load_image("void.png")
         transfromed_image = pygame.transform.scale(original_image, size)
         self.sprite = pygame.sprite.Sprite(spice_group)
         self.sprite.image = transfromed_image
