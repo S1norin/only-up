@@ -1,4 +1,12 @@
-import random
+from random import randrange
+import pygame
+from caratel import Hitbox
+from game_objects import Sas, KillingSas, Bomb, Button, Background, PLATFORM_WIDTH, SPIKE_WIDTH, BOMB_WIDTH, \
+    BUTTON_WIDTH, \
+    BUTTON_HEIGHT
+from caratel import Sans
+from cursor import Cursor
+
 
 GRAVITATION = 100
 STANDARD_JUMP_SPEED = 4
@@ -7,17 +15,6 @@ STOP_FLOATING_POINT = 0.4  # Определяет, при каком значе�
 MAX_HOR_SPEED = 3
 DYNAMIC_POINT_LIMIT = 100  # Через сколько очков будет спарвнится платформа
 BOMB_TIMER_LIMIT = 7
-
-import os
-from random import randrange, choice
-import pygame
-from game_objects import Sas, KillingSas, Bomb, PLATFORM_WIDTH, SPIKE_WIDTH, BOMB_WIDTH, load_image
-from caratel import Sans, WIDTH, HEIGHT, Hitbox
-from game_objects import Sas, KillingSas, Bomb, Button, Background, PLATFORM_WIDTH, SPIKE_WIDTH, BOMB_WIDTH, \
-    BUTTON_WIDTH, \
-    BUTTON_HEIGHT
-from caratel import Sans
-from cursor import Cursor
 
 
 def set_difficulty(level):
@@ -34,13 +31,13 @@ def set_difficulty(level):
 
 
 def init_interface(buttons_group):
-    start_button = Button(width / 2 - BUTTON_WIDTH / 2, height / 2 - height / 6, buttons_group, "Start_button.png")
+    Button(width / 2 - BUTTON_WIDTH / 2, height / 2 - height / 6, buttons_group, "Start_button.png")
     if difficulty_clicks % 3 == 0:
-        difficulty_buttons = Button(width / 2 - BUTTON_WIDTH / 2, height / 2, buttons_group, "Difficulty_Easy.png")
+        Button(width / 2 - BUTTON_WIDTH / 2, height / 2, buttons_group, "Difficulty_Easy.png")
     elif difficulty_clicks % 3 == 1:
-        difficulty_buttons = Button(width / 2 - BUTTON_WIDTH / 2, height / 2, buttons_group, "Difficulty_Advanced.png")
+        Button(width / 2 - BUTTON_WIDTH / 2, height / 2, buttons_group, "Difficulty_Advanced.png")
     else:
-        difficulty_buttons = Button(width / 2 - BUTTON_WIDTH / 2, height / 2, buttons_group, "Difficulty_Hard.png")
+        Button(width / 2 - BUTTON_WIDTH / 2, height / 2, buttons_group, "Difficulty_Hard.png")
 
 
 def interface():
@@ -51,14 +48,14 @@ def interface():
             pygame.quit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if width / 2 - BUTTON_WIDTH / 2 < pygame.mouse.get_pos()[
-                0] < width / 2 - BUTTON_WIDTH / 2 + BUTTON_WIDTH and height / 2 - height / 6 < pygame.mouse.get_pos()[
-                1] < height / 2 - height / 6 + BUTTON_HEIGHT:
+                0] < width / 2 - BUTTON_WIDTH / 2 + BUTTON_WIDTH and \
+                    height / 2 - height / 6 < pygame.mouse.get_pos()[1] < height / 2 - height / 6 + BUTTON_HEIGHT:
                 running_flag = False
                 sans_is_dead = False
                 game_start()
             elif width / 2 - BUTTON_WIDTH / 2 < pygame.mouse.get_pos()[
-                0] < width / 2 - BUTTON_WIDTH / 2 + BUTTON_WIDTH and height / 2 < pygame.mouse.get_pos()[
-                1] < height / 2 + BUTTON_HEIGHT:
+                0] < width / 2 - BUTTON_WIDTH / 2 + BUTTON_WIDTH and \
+                    height / 2 < pygame.mouse.get_pos()[1] < height / 2 + BUTTON_HEIGHT:
                 difficulty_clicks += 1
                 for button in buttons_group:
                     button.kill()
@@ -74,18 +71,17 @@ def create_starfield(platforms_group):
     for y in range(10, height, DYNAMIC_POINT_LIMIT):
         x = randrange(width - PLATFORM_WIDTH)
         if y == 610:
-            platform = Sas(width / 2, y, platforms_group)
+            Sas(width / 2, y, platforms_group)
         else:
-            platform = Sas(x, y, platforms_group)
-
+            Sas(x, y, platforms_group)
 
 
 def spawn_platform(platforms_group):
     x = randrange(width - PLATFORM_WIDTH)
-    platform = Sas(x, 0, platforms_group)
+    Sas(x, 0, platforms_group)
     if randrange(SPIKE_SPAWN_PROBABILITY) == 0:
         x1 = randrange(width - SPIKE_WIDTH)
-        spike = KillingSas(x1, -100, spike_group)
+        KillingSas(x1, -100, spike_group)
     if randrange(BOMB_SPAWN_PROBABILITY) == 0:
         x2 = randrange(width - BOMB_WIDTH)
         bomb = Bomb(x2, 0, bomb_group)
@@ -180,7 +176,8 @@ def killing_sprites():  # Killing sprites that are offscreeen
 
 
 def reset_all_objects():
-    global platform_group, sans_group, cursor_group, spike_group, bomb_group, timer_group, buttons_group, background_group
+    global \
+        platform_group, sans_group, cursor_group, spike_group, bomb_group, timer_group, buttons_group, background_group
     background_group = pygame.sprite.Group()
     platform_group = pygame.sprite.Group()
     sans_group = pygame.sprite.Group()
@@ -208,7 +205,7 @@ def game_start():
     reset_all_objects()
     global bombs_on_screen, cursor, clock, oleg, legs
     # Milcanceuos (Как это слово пишется?) init
-    background_sprite = Background(0, 0, background_group)
+    Background(0, 0, background_group)
     set_difficulty(difficulty_clicks % 3)
     oleg = Sans((width / 2, height / 2), sans_group)  # Олег Санс
     legs = Hitbox((width / 2, height / 2 + 80), sans_group, size=(50, 3))
@@ -285,7 +282,7 @@ if __name__ == '__main__':
         # Gravitation
         oleg.vert_velocity += 0.02 * GRAVITATION / 100
         legs.vert_velocity += 0.02 * GRAVITATION / 100
-        if abs(oleg.vert_velocity) < STOP_FLOATING_POINT:  # Определяет, при каком значении скорости Санс сразу полетит вниз
+        if abs(oleg.vert_velocity) < STOP_FLOATING_POINT:
             oleg.vert_velocity = 1
             legs.vert_velocity = 1
 
