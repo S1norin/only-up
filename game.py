@@ -7,7 +7,6 @@ from game_objects import Sas, KillingSas, Bomb, Button, Background, PLATFORM_WID
 from caratel import Sans
 from cursor import Cursor
 
-
 GRAVITATION = 100
 STANDARD_JUMP_SPEED = 4
 SCREEN_SIZE = (500, 1000)
@@ -61,8 +60,8 @@ def interface():
         if event.type == pygame.QUIT:
             pygame.quit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if x < pygame.mouse.get_pos()[
-                0] < x + BUTTON_WIDTH and y - height / 6 < pygame.mouse.get_pos()[1] < y - height / 6 + BUTTON_HEIGHT:
+            if x < pygame.mouse.get_pos()[0] < x + BUTTON_WIDTH and y - height / 6 < pygame.mouse.get_pos()[
+                1] < y - height / 6 + BUTTON_HEIGHT:
                 running_flag = False
                 sans_is_dead = False
                 game_start()
