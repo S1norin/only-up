@@ -60,8 +60,7 @@ def interface():
         if event.type == pygame.QUIT:
             pygame.quit()
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if x < pygame.mouse.get_pos()[0] < x + BUTTON_WIDTH and y - height / 6 < pygame.mouse.get_pos()[
-                1] < y - height / 6 + BUTTON_HEIGHT:
+            if x < pygame.mouse.get_pos()[0] < x + BUTTON_WIDTH and y - height / 6 < pygame.mouse.get_pos()[1] < y - height / 6 + BUTTON_HEIGHT:
                 running_flag = False
                 sans_is_dead = False
                 game_start()
