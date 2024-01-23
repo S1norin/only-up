@@ -15,6 +15,14 @@ MAX_HOR_SPEED = 3
 DYNAMIC_POINT_LIMIT = 100  # Через сколько очков будет спарвнится платформа
 BOMB_TIMER_LIMIT = 7
 
+with open("scores.txt", "r") as file:
+    score_list = []
+    for i in file.readlines():
+        score_list.append(i.split(" - ")[1].strip())
+
+
+Score_easy, Score_advanced, Score_high = score_list
+
 
 def set_difficulty(level):
     global SPIKE_SPAWN_PROBABILITY, BOMB_SPAWN_PROBABILITY
@@ -27,6 +35,17 @@ def set_difficulty(level):
     else:
         SPIKE_SPAWN_PROBABILITY = 3
         BOMB_SPAWN_PROBABILITY = 5
+
+def change_of_score(difficulty, score):
+    global score_list
+    if difficulty == 0:
+        score_list[0] = score
+    elif difficulty == 1:
+        score_list[1] = score
+    elif difficulty == 2:
+        score_list[2] = score
+    with open("scores.txt", "w") as file:
+        print(f"Easy - {score_list[0]}\nAdvanced - {score_list[1]}\nHigh - {score_list[2]}", file=file)
 
 
 def init_interface(buttons_group, dead):
@@ -187,7 +206,7 @@ def killing_sprites():  # Killing sprites that are offscreeen
 
 def reset_all_objects():
     global \
-        platform_group, sans_group, cursor_group, spike_group, bomb_group, timer_group, buttons_group, background_group
+        platform_group, sans_group, cursor_group, spike_group, bomb_group, timer_group, buttons_group, background_group, points, dynamic_points
     background_group = pygame.sprite.Group()
     platform_group = pygame.sprite.Group()
     sans_group = pygame.sprite.Group()
@@ -196,6 +215,8 @@ def reset_all_objects():
     bomb_group = pygame.sprite.Group()
     timer_group = pygame.sprite.Group()
     buttons_group = pygame.sprite.Group()
+    points = 0
+    dynamic_points = 0
 
 
 def render():
@@ -208,6 +229,12 @@ def render():
     bomb_group.draw(screen)
     for bomb in bombs_on_screen:
         bomb.draw_timer(int(BOMB_TIMER_LIMIT - bomb.timer), screen, bomb.sprite.rect[0], bomb.sprite.rect[1])
+    score_text = font.render(f"Score {str(int(points))}", False, (61, 236, 242))
+    text_x = 20
+    text_y = height - 50
+    high_score_text = font.render(f"High score {str(int(score_list[difficulty_clicks % 3]))}", False, (154, 245, 115))
+    screen.blit(score_text, (text_x, text_y))
+    screen.blit(high_score_text, (text_x, text_y - 30))
     pygame.display.flip()
 
 
@@ -245,6 +272,7 @@ if __name__ == '__main__':
     sans_is_dead = False
     interface_running = True
     running = True
+    font = pygame.font.Font(None, 35)
 
     # Sprite groups, start screen and character initialization
     background_group = pygame.sprite.Group()
@@ -306,6 +334,8 @@ if __name__ == '__main__':
         if sans_is_dead:
             alive_music.stop()
             dead_music.play()
+            if points > int(score_list[difficulty_clicks % 3]):
+                change_of_score(difficulty_clicks % 3, int(points))
             pygame.mouse.set_visible(True)
             interface_running = True
         render()
