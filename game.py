@@ -12,7 +12,7 @@ STANDARD_JUMP_SPEED = 4
 SCREEN_SIZE = (500, 1000)
 STOP_FLOATING_POINT = 0.4  # Определяет, при каком значении скорости Санс сразу полетит вниз
 MAX_HOR_SPEED = 3
-DYNAMIC_POINT_LIMIT = 100  # Через сколько очков будет спарвнится платформа
+DYNAMIC_POINT_LIMIT = 100  # Через сколько очков будет спавниться платформа
 BOMB_TIMER_LIMIT = 7
 
 with open("scores.txt", "r") as file:
@@ -35,6 +35,7 @@ def set_difficulty(level):
     else:
         SPIKE_SPAWN_PROBABILITY = 3
         BOMB_SPAWN_PROBABILITY = 5
+
 
 def change_of_score(difficulty, score):
     global score_list
@@ -260,15 +261,22 @@ def game_start():
 points = 0  # Счёт игрока
 dynamic_points = 0  # То же самое, что points, но обнуляется каждые DYNAMIC_POINTS_LIMIT очков, создавая платформу
 if __name__ == '__main__':
-    # Pygame and screen initialization
+    # At the first God made the window and the screen.
     pygame.init()
     pygame.display.set_caption('Doodle Moodle')
     size = width, height = SCREEN_SIZE
     screen = pygame.display.set_mode(size)
     difficulty_clicks = 0
     pygame.mixer.pre_init()
+    # And the window was blank and without form; and it was dark on the face of the window: and the Spirit of God was
+    # moving on the face of the screen
+
+    # And God said, Let there be musix: and there was music.
     alive_music = pygame.mixer.Sound("assets\Hampsterdance_main.mp3")
     dead_music = pygame.mixer.Sound("assets\Hampsterdance_slowed_reverbed_dowbgraded_cut.mp3")
+    # And God, looking on the music, saw that it was good: and God made a division between the alive and the dead one,
+    # Naming the alive, Hampsterdance_main.mp3, and the dark, Hampsterdance_slowed_reverbed_dowbgraded_cut.mp3.
+
     sans_is_dead = False
     interface_running = True
     running = True
@@ -286,6 +294,7 @@ if __name__ == '__main__':
 
     # Milcanceuos (Как это слово пишется?) init
 
+    # And God said, Let there be an interface arch stretching over the game, parting life from death.
     init_interface(buttons_group, sans_is_dead)
 
     screen.fill((255, 255, 255))

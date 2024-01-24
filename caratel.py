@@ -38,6 +38,3 @@ class Sans(Hitbox):
         original_image = load_image(img_name)
         transfromed_image = pygame.transform.scale(original_image, (WIDTH, HEIGHT))
         self.sprite.image = transfromed_image
-
-    def death(self):  # sans is fucking immortal dude
-        pass

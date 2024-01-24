@@ -68,6 +68,7 @@ class KillingSas(Sprite):
     def set_size(self):
         self.width, self.height = SPIKE_WIDTH, SPIKE_HEIGHT
 
+
 class Bomb(Sprite):
     def __init__(self, x, y, spice_group):
         super().__init__(x, y, spice_group)
