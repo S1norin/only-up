@@ -1,3 +1,5 @@
+Форк репозитория https://github.com/Dyehalla/doodle-moodle-dingle-dangle
+
 # Проект для Яндекс.Лицей. Игра на Pygame. ~~Doodle Jump clone~~ Only Up!
 Игра Михаила Крылова (*Sinorin*) и Игоря Михайлова (*igmh*)
 
